@@ -415,14 +415,10 @@ function updateStats() {
 
 async function triggerGoWebhook(vac) {
   try {
-    await fetch('https://mvl1009.app.n8n.cloud/webhook/44b3d4ee-d84f-432b-8d5b-02052507e9e9', {
+    await fetch('https://mvl1009.app.n8n.cloud/webhook/d9c398f5-d635-4fd2-b4ce-231b3bc087fe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        job_id: vac.id,
-        company_name: vac.company_name,
-        company_name_display: vac.company_name_display,
-      }),
+      body: JSON.stringify({ job_id: vac.id }),
     });
   } catch (e) {
     console.warn('Webhook mislukt:', e);
