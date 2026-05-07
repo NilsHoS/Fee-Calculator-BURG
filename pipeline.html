@@ -206,6 +206,21 @@
 
   .enrich-section { margin-bottom: 14px; }
 
+  .badge-no-apollo {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: rgba(150,150,150,0.15);
+    border: 1px solid rgba(150,150,150,0.35);
+    color: #999;
+  }
+
   .badge-not-enriched {
     display: inline-flex;
     align-items: center;
@@ -456,7 +471,7 @@ function buildCard(job) {
       </div>
     </div>`;
 
-  // Enrich section (existing)
+  // Enrich section
   let enrichHtml;
   if (job.enriched_at) {
     const chips = [
@@ -467,9 +482,13 @@ function buildCard(job) {
       <span class="badge-enriched">✓ Enriched</span>
       ${chips ? `<div class="enrich-details">${chips}</div>` : ''}
     </div>`;
+  } else if (job.recruiter_linkedin) {
+    enrichHtml = `<div class="enrich-section">
+      <span class="badge-not-enriched">⏳ Wacht op Apollo enrichment</span>
+    </div>`;
   } else {
     enrichHtml = `<div class="enrich-section">
-      <span class="badge-not-enriched">⚠ Nog niet enriched</span>
+      <span class="badge-no-apollo">— Geen Apollo beschikbaar</span>
     </div>`;
   }
 
