@@ -213,6 +213,36 @@
   .recruiter-name-val { font-size: 13px; font-weight: 500; }
   .recruiter-headline-val { font-size: 11px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .card-footer { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; align-items: center; }
+
+  /* No-go reason popup */
+  .nogo-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 600; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  .nogo-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .nogo-popup {
+    position: fixed; bottom: 0; left: 50%; width: min(560px, 100vw);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0; padding: 12px 20px 36px;
+    z-index: 601;
+    transform: translateX(-50%) translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .nogo-popup.open { transform: translateX(-50%) translateY(0); }
+
+  .nogo-popup-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+  .nogo-popup-job { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.3; margin-bottom: 3px; color: var(--nogo); }
+  .nogo-popup-company { font-size: 13px; color: var(--blue-light); margin-bottom: 14px; }
+  .nogo-popup-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
+  .nogo-popup-reasons { display: flex; flex-direction: column; gap: 7px; }
+  .nogo-reason-btn {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 12px; padding: 10px 16px; font-size: 14px;
+    font-family: 'DM Sans', sans-serif; text-align: left; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .nogo-reason-btn:hover { background: rgba(230,57,70,0.1); border-color: rgba(230,57,70,0.4); color: var(--nogo); }
 </style>
 </head>
 <body>
@@ -266,6 +296,23 @@
   <div class="desc-modal-body" id="desc-modal-body"></div>
 </div>
 
+<div class="nogo-overlay" id="nogo-overlay" onclick="window.closeNogoPopup()"></div>
+<div class="nogo-popup" id="nogo-popup">
+  <div class="nogo-popup-handle"></div>
+  <div class="nogo-popup-job" id="nogo-popup-title"></div>
+  <div class="nogo-popup-company" id="nogo-popup-company"></div>
+  <div class="nogo-popup-label">Reden no-go (optioneel)</div>
+  <div class="nogo-popup-reasons">
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Verkeerde sector')">Verkeerde sector</button>
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Te operationeel')">Te operationeel</button>
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Intermediair / uitzendbureau')">Intermediair / uitzendbureau</button>
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Te junior / stage')">Te junior / stage</button>
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Buiten werkgebied')">Buiten werkgebied</button>
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Dubbeling / al bekend')">Dubbeling / al bekend</button>
+    <button class="nogo-reason-btn" onclick="window.selectNogoReason('Overig')">Overig</button>
+  </div>
+</div>
+
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -277,6 +324,7 @@ const supabase = createClient(
 let vacatures = [];
 let total = 0;
 let current = 0, decisions = [], activeCard = null;
+let pendingNogoVacId = null;
 
 function mapRow(row) {
   return {
@@ -475,7 +523,11 @@ function doAction(action) {
   activeCard.classList.add(animClass);
   if (action === 'go') { const s = activeCard.querySelector('.stamp.go'); if (s) s.style.opacity = '1'; }
   if (action === 'nogo') { const s = activeCard.querySelector('.stamp.nogo'); if (s) s.style.opacity = '1'; }
-  setTimeout(() => { current++; renderStack(); }, 320);
+  if (action === 'nogo') {
+    setTimeout(() => { current++; showNogoReasonPopup(vac); }, 320);
+  } else {
+    setTimeout(() => { current++; renderStack(); }, 320);
+  }
 }
 
 function setupDrag(card) {
@@ -530,6 +582,28 @@ function addLog(vac, action) {
   list.insertBefore(item, list.firstChild);
 }
 
+function showNogoReasonPopup(vac) {
+  pendingNogoVacId = vac.id;
+  document.getElementById('nogo-popup-title').textContent = vac.functie;
+  document.getElementById('nogo-popup-company').textContent = vac.bedrijf;
+  document.getElementById('nogo-overlay').classList.add('open');
+  document.getElementById('nogo-popup').classList.add('open');
+}
+
+async function selectNogoReason(reason) {
+  if (pendingNogoVacId) {
+    await supabase.from('jobs').update({ nogo_reason: reason }).eq('id', pendingNogoVacId);
+  }
+  closeNogoPopup();
+}
+
+function closeNogoPopup() {
+  document.getElementById('nogo-overlay').classList.remove('open');
+  document.getElementById('nogo-popup').classList.remove('open');
+  pendingNogoVacId = null;
+  renderStack();
+}
+
 function toggleLog() { document.getElementById('log-panel').classList.toggle('open'); }
 
 async function resetDeck() {
@@ -542,6 +616,8 @@ window.doAction = doAction;
 window.undoLast = undoLast;
 window.toggleLog = toggleLog;
 window.resetDeck = resetDeck;
+window.selectNogoReason = selectNogoReason;
+window.closeNogoPopup = closeNogoPopup;
 window.openDescModal = function(title, desc) {
   document.getElementById('desc-modal-title').textContent = title;
   document.getElementById('desc-modal-body').textContent = desc;
