@@ -248,6 +248,13 @@
   .nogo-reason-btn:hover { background: rgba(230,57,70,0.1); border-color: rgba(230,57,70,0.4); color: var(--nogo); }
   .nogo-reason-btn.full-width { grid-column: 1 / -1; }
   .nogo-reason-emoji { font-size: 15px; flex-shrink: 0; }
+  .nogo-back-btn {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 12px; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; padding: 14px 0 0; display: block;
+    width: 100%; text-align: center; transition: color 0.15s;
+  }
+  .nogo-back-btn:hover { color: var(--text); }
 </style>
 </head>
 <body>
@@ -320,6 +327,7 @@
     <button class="nogo-reason-btn" onclick="window.selectNogoReason('Dubbeling / al bekend')"><span class="nogo-reason-emoji">📋</span>Al bekend</button>
     <button class="nogo-reason-btn full-width" onclick="window.selectNogoReason('Overig')"><span class="nogo-reason-emoji">💬</span>Overig</button>
   </div>
+  <button class="nogo-back-btn" onclick="window.backFromNogoPopup()">← Terug naar vacature</button>
 </div>
 
 <script type="module">
@@ -613,6 +621,13 @@ function closeNogoPopup() {
   renderStack();
 }
 
+async function backFromNogoPopup() {
+  document.getElementById('nogo-overlay').classList.remove('open');
+  document.getElementById('nogo-popup').classList.remove('open');
+  pendingNogoVacId = null;
+  await undoLast();
+}
+
 function toggleLog() { document.getElementById('log-panel').classList.toggle('open'); }
 
 async function resetDeck() {
@@ -627,6 +642,7 @@ window.toggleLog = toggleLog;
 window.resetDeck = resetDeck;
 window.selectNogoReason = selectNogoReason;
 window.closeNogoPopup = closeNogoPopup;
+window.backFromNogoPopup = backFromNogoPopup;
 window.openDescModal = function(title, desc) {
   document.getElementById('desc-modal-title').textContent = title;
   document.getElementById('desc-modal-body').textContent = desc;
