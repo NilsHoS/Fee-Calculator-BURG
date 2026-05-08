@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>BURG Sales Dashboard</title>
+<link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #0f3460;
+    --blue-mid: #1a4f8c;
+    --blue-light: #2d7dd2;
+    --go: #1db954;
+    --nogo: #e63946;
+    --amber: #f4a261;
+    --purple: #9b5de5;
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f5;
+    --text-muted: #8888a0;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  /* ── Login ── */
+
+  .login-wrap {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 360px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .login-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--text); letter-spacing: -0.5px; }
+  .login-logo span { color: var(--blue-light); }
+  .login-subtitle { font-size: 13px; color: var(--text-muted); margin-top: -4px; }
+
+  .login-form { display: flex; flex-direction: column; gap: 10px; }
+
+  .login-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .login-input:focus { border-color: var(--blue-light); }
+  .login-input::placeholder { color: var(--text-muted); }
+
+  .login-btn {
+    background: var(--blue-light);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 13px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-top: 4px;
+  }
+  .login-btn:hover { opacity: 0.85; }
+  .login-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .login-error { font-size: 13px; color: var(--nogo); min-height: 18px; text-align: center; }
+
+  /* ── Dashboard ── */
+
+  #dashboard {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 10px;
+  }
+
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--text); letter-spacing: -0.5px; }
+  .logo span { color: var(--blue-light); }
+
+  .logout-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .logout-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  .status-summary {
+    width: 100%;
+    max-width: 700px;
+    padding: 0 20px 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .summary-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .summary-chip.active { background: var(--blue-light); border-color: var(--blue-light); color: white; }
+  .summary-chip:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .summary-chip .chip-count { font-weight: 700; }
+
+  .list {
+    width: 100%;
+    max-width: 700px;
+    padding: 0 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .vacancy-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: border-color 0.15s;
+  }
+  .vacancy-card:hover { border-color: rgba(255,255,255,0.14); }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; line-height: 1.2; }
+  .card-company { font-size: 16px; color: var(--blue-light); font-weight: 600; margin-top: 4px; }
+
+  .status-badge-go {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    background: rgba(29,185,84,0.15);
+    color: var(--go);
+  }
+
+  .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+  .meta-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
+  .meta-chip a { color: var(--blue-light); text-decoration: none; }
+  .meta-chip a:hover { text-decoration: underline; }
+
+  .info-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .info-badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .info-badge-salary { background: rgba(29,185,84,0.12); color: var(--go); }
+  .info-badge-type { background: rgba(45,125,210,0.12); color: var(--blue-light); }
+  .info-badge-industry { background: rgba(244,162,97,0.12); color: var(--amber); }
+
+  .li-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #0077b5; border-radius: 3px; font-size: 9px; font-weight: 800; color: white; text-decoration: none; font-family: 'Syne', sans-serif; vertical-align: middle; margin-left: 5px; flex-shrink: 0; line-height: 1; }
+  .li-badge:hover { opacity: 0.8; }
+
+  .contact-section { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .contact-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
+  .contact-grid { display: flex; flex-wrap: wrap; gap: 14px; }
+  .contact-block { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 4px; }
+  .contact-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+  .contact-person-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; }
+  .contact-person-headline { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .contact-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue-light); text-decoration: none; word-break: break-all; }
+  .contact-link:hover { text-decoration: underline; }
+  .contact-address { font-size: 12px; color: var(--text-muted); }
+  .apollo-tag { font-size: 9px; background: rgba(244,162,97,0.15); color: var(--amber); padding: 1px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
+  .apollo-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.45; font-style: italic; }
+
+  .enrich-section { margin-bottom: 14px; }
+  .enrich-details { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .enrich-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; }
+  .badge-no-apollo { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(150,150,150,0.15); border: 1px solid rgba(150,150,150,0.35); color: #999; }
+  .badge-not-enriched { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(244,162,97,0.18); border: 1px solid rgba(244,162,97,0.45); color: #f4a261; }
+  .badge-enriched { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(29,185,84,0.12); border: 1px solid rgba(29,185,84,0.35); color: var(--go); }
+
+  /* ── Sales section ── */
+
+  .sales-section {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sales-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; }
+  .sales-field { display: flex; flex-direction: column; gap: 5px; }
+  .sales-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 500; }
+
+  .sales-status-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 10px;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .sales-status-select:focus { border-color: var(--blue-light); }
+  .sales-status-select option { background: #1c1c27; }
+  .sales-status-select[data-status="Hot lead"] { border-color: rgba(230,57,70,0.45); color: #e87070; }
+  .sales-status-select[data-status="Afgerond"] { border-color: rgba(29,185,84,0.45); color: var(--go); }
+  .sales-status-select[data-status="Gebeld"] { border-color: rgba(45,125,210,0.45); color: var(--blue-light); }
+  .sales-status-select[data-status="Gemaild"] { border-color: rgba(45,125,210,0.45); color: var(--blue-light); }
+  .sales-status-select[data-status="Geen reactie"] { border-color: rgba(244,162,97,0.45); color: var(--amber); }
+
+  .sales-notes-textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 10px;
+    width: 100%;
+    resize: vertical;
+    min-height: 72px;
+    outline: none;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+  .sales-notes-textarea:focus { border-color: var(--blue-light); }
+  .sales-notes-textarea::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+  .saving-indicator { font-size: 11px; color: var(--text-muted); text-align: right; min-height: 16px; }
+  .saving-indicator.active { color: var(--amber); }
+  .saving-indicator.saved { color: var(--go); }
+
+  /* ── States ── */
+
+  .loading-state, .empty-state {
+    width: 100%;
+    max-width: 700px;
+    padding: 80px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--text-muted);
+    font-size: 14px;
+    text-align: center;
+  }
+  .empty-state span { font-size: 40px; margin-bottom: 4px; }
+
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--surface2); border-top-color: var(--blue-light); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 20px;
+    font-size: 13px; color: var(--text); z-index: 999;
+    transition: transform 0.3s ease; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .back-link { position: fixed; top: 18px; left: 16px; font-size: 12px; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 4px; z-index: 200; }
+  .back-link:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">BURG <span>Sales</span></div>
+    <p class="login-subtitle">Log in om je leads te bekijken</p>
+    <form class="login-form" id="login-form">
+      <input class="login-input" type="email" id="login-email" placeholder="E-mailadres" autocomplete="email" required>
+      <input class="login-input" type="password" id="login-password" placeholder="Wachtwoord" autocomplete="current-password" required>
+      <button class="login-btn" type="submit" id="login-btn">Inloggen</button>
+    </form>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" style="display:none">
+  <a class="back-link" href="/BURG-Apps/">← Terug</a>
+
+  <div class="header">
+    <div class="logo">BURG <span>Sales</span></div>
+    <button class="logout-btn" onclick="doLogout()">Uitloggen</button>
+  </div>
+
+  <div class="status-summary" id="status-summary"></div>
+
+  <div id="loading" class="loading-state">
+    <div class="spinner"></div>
+    <span>Leads laden…</span>
+  </div>
+
+  <div id="empty" class="empty-state" style="display:none">
+    <span>📭</span>
+    <p>Geen leads gevonden voor jouw account.</p>
+  </div>
+
+  <div class="list" id="list" style="display:none"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const supabase = createClient(
+  'https://ziwqshuabwcthqjspuso.supabase.co',
+  'sb_publishable_PxbxG-9ArQCsrgF9-lAM8g_-uglxVYU'
+);
+
+const SALES_STATUSES = ['Te contacteren', 'Gebeld', 'Gemaild', 'Geen reactie', 'Hot lead', 'Afgerond'];
+
+let allJobs = [];
+let activeFilter = 'all';
+let currentUser = null;
+const noteTimers = {};
+
+// ── Auth ──
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session?.user) {
+    currentUser = session.user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    document.getElementById('dashboard').style.flexDirection = 'column';
+    document.getElementById('dashboard').style.alignItems = 'center';
+    document.getElementById('dashboard').style.width = '100%';
+    loadJobs();
+  } else {
+    currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+});
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const errDiv = document.getElementById('login-error');
+
+  btn.disabled = true;
+  btn.textContent = 'Bezig…';
+  errDiv.textContent = '';
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errDiv.textContent = 'Inloggen mislukt: ' + (error.message === 'Invalid login credentials' ? 'Onjuist e-mailadres of wachtwoord.' : error.message);
+    btn.disabled = false;
+    btn.textContent = 'Inloggen';
+  }
+});
+
+window.doLogout = async function() {
+  await supabase.auth.signOut();
+};
+
+// ── Data ──
+
+async function loadJobs() {
+  if (!currentUser) return;
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('list').style.display = 'none';
+  document.getElementById('empty').style.display = 'none';
+  document.getElementById('status-summary').innerHTML = '';
+
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('id, job_title, company_name, job_location, job_url, data_source, date_scraped, reviewed_at, enriched_at, company_website, company_phone, company_industry, company_linkedin, recruiter_name, recruiter_linkedin, recruiter_headline, company_address, salary, employment_type, industry, posted_at, contact_email, contact_phone, sales_status, sales_notes')
+    .eq('assigned_to', currentUser.email)
+    .eq('review_status', 'approved')
+    .order('reviewed_at', { ascending: false });
+
+  document.getElementById('loading').style.display = 'none';
+
+  if (error) {
+    document.getElementById('empty').style.display = 'flex';
+    document.getElementById('empty').innerHTML = '<span>⚠️</span><p>Kon leads niet laden.<br>' + error.message + '</p>';
+    return;
+  }
+
+  allJobs = data || [];
+  renderSummary();
+  render();
+}
+
+function getStatus(job) {
+  return job.sales_status || 'Te contacteren';
+}
+
+function filtered() {
+  if (activeFilter === 'all') return allJobs;
+  return allJobs.filter(j => getStatus(j) === activeFilter);
+}
+
+function renderSummary() {
+  const summary = document.getElementById('status-summary');
+  const counts = {};
+  allJobs.forEach(j => {
+    const s = getStatus(j);
+    counts[s] = (counts[s] || 0) + 1;
+  });
+
+  let html = `<button class="summary-chip ${activeFilter === 'all' ? 'active' : ''}" onclick="window.setFilter('all')">Alle <span class="chip-count">${allJobs.length}</span></button>`;
+
+  SALES_STATUSES.forEach(s => {
+    if (counts[s]) {
+      html += `<button class="summary-chip ${activeFilter === s ? 'active' : ''}" onclick="window.setFilter('${s}')">${s} <span class="chip-count">${counts[s]}</span></button>`;
+    }
+  });
+
+  summary.innerHTML = html;
+}
+
+function render() {
+  const list = document.getElementById('list');
+  const empty = document.getElementById('empty');
+  const jobs = filtered();
+
+  if (jobs.length === 0) {
+    list.style.display = 'none';
+    empty.style.display = 'flex';
+    empty.innerHTML = '<span>📭</span><p>Geen leads in deze categorie.</p>';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.style.display = 'flex';
+  list.innerHTML = '';
+  jobs.forEach(job => list.appendChild(buildCard(job)));
+}
+
+function esc(str) {
+  return str ? String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+}
+
+function buildCard(job) {
+  const card = document.createElement('div');
+  card.className = 'vacancy-card';
+  card.dataset.id = job.id;
+
+  const postedStr = job.posted_at ? new Date(job.posted_at).toLocaleDateString('nl-NL') : null;
+  const dateStr = job.date_scraped
+    ? new Date(job.date_scraped).toLocaleDateString('nl-NL')
+    : job.reviewed_at ? new Date(job.reviewed_at).toLocaleDateString('nl-NL') : null;
+
+  const metaChips = [
+    job.job_location ? `<span class="meta-chip">📍 ${esc(job.job_location)}</span>` : '',
+    job.data_source  ? `<span class="meta-chip">🔍 ${esc(job.data_source)}</span>` : '',
+    postedStr ? `<span class="meta-chip">📅 Geplaatst op: ${postedStr}</span>` : (dateStr ? `<span class="meta-chip">📅 ${dateStr}</span>` : ''),
+    job.job_url ? `<span class="meta-chip">↗ <a href="${esc(job.job_url)}" target="_blank" rel="noopener">Bekijk vacature</a></span>` : '',
+  ].filter(Boolean).join('');
+
+  const infoBadgesHtml = [
+    job.salary          ? `<span class="info-badge info-badge-salary">💶 ${esc(job.salary)}</span>` : '',
+    job.employment_type ? `<span class="info-badge info-badge-type">${esc(job.employment_type)}</span>` : '',
+    job.industry        ? `<span class="info-badge info-badge-industry">${esc(job.industry)}</span>` : '',
+  ].filter(Boolean).join('');
+
+  const companyLiHtml = job.company_linkedin
+    ? ` <a class="li-badge" href="${esc(job.company_linkedin)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in</a>`
+    : '';
+
+  const recruiterBlock = job.recruiter_name ? `
+    <div class="contact-block">
+      <div class="contact-block-label">Contactpersoon</div>
+      <div class="contact-person-name">${esc(job.recruiter_name)}${job.recruiter_linkedin ? ` <a class="li-badge" href="${esc(job.recruiter_linkedin)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in</a>` : ''}</div>
+      ${job.recruiter_headline ? `<div class="contact-person-headline">${esc(job.recruiter_headline)}</div>` : ''}
+    </div>` : '';
+
+  const hasCompanyContact = job.company_website || job.company_address;
+  const companyBlock = hasCompanyContact ? `
+    <div class="contact-block">
+      <div class="contact-block-label">Bedrijf</div>
+      ${job.company_website ? `<a class="contact-link" href="${esc(job.company_website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐 ${esc(job.company_website.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>` : ''}
+      ${job.company_address ? `<div class="contact-address">📍 ${esc(job.company_address)}</div>` : ''}
+    </div>` : '';
+
+  const apolloBlock = `
+    <div class="contact-block">
+      <div class="contact-block-label">Contact <span class="apollo-tag">Apollo</span></div>
+      ${job.contact_email
+        ? `<a class="contact-link" href="mailto:${esc(job.contact_email)}" onclick="event.stopPropagation()">✉ ${esc(job.contact_email)}</a>`
+        : `<span class="apollo-placeholder">✉ nog niet verrijkt</span>`}
+      ${job.contact_phone
+        ? `<a class="contact-link" href="tel:${esc(job.contact_phone)}" onclick="event.stopPropagation()">📞 ${esc(job.contact_phone)}</a>`
+        : `<span class="apollo-placeholder">📞 nog niet verrijkt</span>`}
+    </div>`;
+
+  const contactSectionHtml = `
+    <div class="contact-section">
+      <div class="contact-section-title">Contactinformatie</div>
+      <div class="contact-grid">
+        ${recruiterBlock}
+        ${companyBlock}
+        ${apolloBlock}
+      </div>
+    </div>`;
+
+  let enrichHtml;
+  if (job.enriched_at) {
+    const chips = [
+      job.company_industry ? `<span class="enrich-chip">🏭 ${esc(job.company_industry)}</span>` : '',
+      job.company_phone    ? `<span class="enrich-chip">📞 ${esc(job.company_phone)}</span>` : '',
+    ].filter(Boolean).join('');
+    enrichHtml = `<div class="enrich-section"><span class="badge-enriched">✓ Enriched</span>${chips ? `<div class="enrich-details">${chips}</div>` : ''}</div>`;
+  } else if (job.recruiter_linkedin) {
+    enrichHtml = `<div class="enrich-section"><span class="badge-not-enriched">⏳ Wacht op Apollo enrichment</span></div>`;
+  } else {
+    enrichHtml = `<div class="enrich-section"><span class="badge-no-apollo">— Geen Apollo beschikbaar</span></div>`;
+  }
+
+  const currentStatus = getStatus(job);
+  const statusOptions = SALES_STATUSES.map(s =>
+    `<option value="${esc(s)}" ${currentStatus === s ? 'selected' : ''}>${esc(s)}</option>`
+  ).join('');
+
+  const salesSection = `
+    <div class="sales-section">
+      <div class="sales-section-title">Sales opvolging</div>
+      <div class="sales-field">
+        <label class="sales-label">Status</label>
+        <select class="sales-status-select" id="status-sel-${job.id}" data-status="${esc(currentStatus)}" onchange="window.updateSalesStatus('${job.id}', this)">
+          ${statusOptions}
+        </select>
+      </div>
+      <div class="sales-field">
+        <label class="sales-label">Notities</label>
+        <textarea class="sales-notes-textarea" id="notes-${job.id}" placeholder="Voeg notities toe…" oninput="window.scheduleNotesSave('${job.id}', this.value)">${esc(job.sales_notes || '')}</textarea>
+        <div class="saving-indicator" id="notes-ind-${job.id}"></div>
+      </div>
+    </div>`;
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div>
+        <div class="card-title">${esc(job.job_title) || '—'}</div>
+        <div class="card-company">${esc(job.company_name) || '—'}${companyLiHtml}</div>
+      </div>
+      <span class="status-badge-go">Go</span>
+    </div>
+    <div class="card-meta">${metaChips}</div>
+    ${infoBadgesHtml ? `<div class="info-badges">${infoBadgesHtml}</div>` : ''}
+    ${contactSectionHtml}
+    ${enrichHtml}
+    ${salesSection}`;
+
+  return card;
+}
+
+// ── Actions ──
+
+window.setFilter = function(filter) {
+  activeFilter = filter;
+  renderSummary();
+  render();
+};
+
+window.updateSalesStatus = async function(id, selectEl) {
+  const status = selectEl.value;
+  selectEl.dataset.status = status;
+
+  const job = allJobs.find(j => j.id === id);
+  if (job) job.sales_status = status;
+
+  const { error } = await supabase
+    .from('jobs')
+    .update({ sales_status: status })
+    .eq('id', id);
+
+  if (error) { showToast('Fout bij opslaan: ' + error.message); return; }
+
+  renderSummary();
+  showToast('Status opgeslagen.');
+};
+
+window.scheduleNotesSave = function(id, value) {
+  const job = allJobs.find(j => j.id === id);
+  if (job) job.sales_notes = value;
+
+  const ind = document.getElementById('notes-ind-' + id);
+  if (ind) { ind.textContent = 'Opslaan…'; ind.className = 'saving-indicator active'; }
+
+  clearTimeout(noteTimers[id]);
+  noteTimers[id] = setTimeout(async () => {
+    const { error } = await supabase
+      .from('jobs')
+      .update({ sales_notes: value })
+      .eq('id', id);
+
+    if (!ind) return;
+    if (error) {
+      ind.textContent = 'Fout bij opslaan';
+      ind.className = 'saving-indicator';
+    } else {
+      ind.textContent = 'Opgeslagen ✓';
+      ind.className = 'saving-indicator saved';
+      setTimeout(() => { ind.textContent = ''; ind.className = 'saving-indicator'; }, 2500);
+    }
+  }, 1000);
+};
+
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

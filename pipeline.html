@@ -340,6 +340,15 @@ const supabase = createClient(
 
 const RECRUITERS = ['Nils', 'Ludo', 'Pim', 'Diko', 'Joey', 'Ryan'];
 
+const RECRUITER_EMAILS = {
+  'Nils': 'nils.denherder@burgqhsse.nl',
+  'Ludo': 'ludo.vansoldt@burgqhsse.nl',
+  'Pim':  'pim.hartman@burgqhsse.nl',
+  'Diko': 'diko.warbie@burgqhsse.nl',
+  'Joey': 'joey.vanderveer@burgqhsse.nl',
+  'Ryan': 'ryan.devos@burgqhsse.nl',
+};
+
 let allJobs = [];
 let activeFilter = 'all';
 
@@ -541,9 +550,10 @@ window.assignRecruiter = async function(id, btn) {
   if (!recruiter) { showToast('Selecteer eerst een recruiter.'); return; }
 
   btn.disabled = true;
+  const email = RECRUITER_EMAILS[recruiter] || null;
   const { error } = await supabase
     .from('jobs')
-    .update({ reviewed_by: recruiter, reviewed_at: new Date().toISOString() })
+    .update({ reviewed_by: recruiter, assigned_to: email, reviewed_at: new Date().toISOString() })
     .eq('id', id);
 
   if (error) { showToast('Fout bij opslaan: ' + error.message); btn.disabled = false; return; }
