@@ -305,15 +305,15 @@
 <div class="header">
   <div class="logo">BURG <span>Pipeline</span></div>
   <div class="stats">
-    <div class="stat"><strong id="count-approved">—</strong>Goedgekeurd</div>
-    <div class="stat"><strong id="count-behandeling">—</strong>In behandeling</div>
+    <div class="stat"><strong id="count-te-wijzen">—</strong>Te wijzen</div>
+    <div class="stat"><strong id="count-toegewezen">—</strong>Toegewezen</div>
   </div>
 </div>
 
 <div class="filters">
-  <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">Alle</button>
-  <button class="filter-btn" data-filter="approved" onclick="setFilter('approved')">Goedgekeurd</button>
-  <button class="filter-btn" data-filter="in_behandeling" onclick="setFilter('in_behandeling')">In behandeling</button>
+  <button class="filter-btn active" data-filter="te-wijzen" onclick="setFilter('te-wijzen')">Te wijzen</button>
+  <button class="filter-btn" data-filter="toegewezen" onclick="setFilter('toegewezen')">Toegewezen</button>
+  <button class="filter-btn" data-filter="all" onclick="setFilter('all')">Alle vacatures</button>
 </div>
 
 <div id="loading" class="loading-state">
@@ -350,7 +350,7 @@ const RECRUITER_EMAILS = {
 };
 
 let allJobs = [];
-let activeFilter = 'all';
+let activeFilter = 'te-wijzen';
 
 async function load() {
   document.getElementById('loading').style.display = 'flex';
@@ -359,8 +359,8 @@ async function load() {
 
   const { data, error } = await supabase
     .from('jobs')
-    .select('id, job_title, company_name, job_location, job_url, data_source, date_scraped, review_status, reviewed_by, reviewed_at, enriched_at, company_website, company_phone, company_industry, company_linkedin, recruiter_name, recruiter_linkedin, recruiter_headline, company_address, salary, employment_type, industry, posted_at, contact_email, contact_phone')
-    .in('review_status', ['approved', 'in_behandeling'])
+    .select('id, job_title, company_name, job_location, job_url, data_source, date_scraped, review_status, reviewed_by, reviewed_at, enriched_at, company_website, company_phone, company_industry, company_linkedin, recruiter_name, recruiter_linkedin, recruiter_headline, company_address, salary, employment_type, industry, posted_at, contact_email, contact_phone, assigned_to')
+    .eq('review_status', 'approved')
     .order('reviewed_at', { ascending: false });
 
   document.getElementById('loading').style.display = 'none';
@@ -377,13 +377,15 @@ async function load() {
 }
 
 function updateStats() {
-  document.getElementById('count-approved').textContent = allJobs.filter(j => j.review_status === 'approved').length;
-  document.getElementById('count-behandeling').textContent = allJobs.filter(j => j.review_status === 'in_behandeling').length;
+  document.getElementById('count-te-wijzen').textContent = allJobs.filter(j => !j.assigned_to).length;
+  document.getElementById('count-toegewezen').textContent = allJobs.filter(j => !!j.assigned_to).length;
 }
 
 function filtered() {
   if (activeFilter === 'all') return allJobs;
-  return allJobs.filter(j => j.review_status === activeFilter);
+  if (activeFilter === 'te-wijzen') return allJobs.filter(j => !j.assigned_to);
+  if (activeFilter === 'toegewezen') return allJobs.filter(j => !!j.assigned_to);
+  return allJobs;
 }
 
 function render() {
@@ -413,9 +415,6 @@ function buildCard(job) {
   const card = document.createElement('div');
   card.className = 'vacancy-card';
   card.dataset.id = job.id;
-
-  const statusLabel = job.review_status === 'in_behandeling' ? 'In behandeling' : 'Goedgekeurd';
-  const statusClass = 'status-' + job.review_status;
 
   const postedStr = job.posted_at
     ? new Date(job.posted_at).toLocaleDateString('nl-NL')
@@ -509,17 +508,13 @@ function buildCard(job) {
     ? `<span class="recruiter-label">Toegewezen aan:</span><span class="recruiter-assigned">👤 ${job.reviewed_by}</span>`
     : `<span class="recruiter-label">Nog niet toegewezen</span>`;
 
-  const actionBtns = job.review_status === 'approved'
-    ? `<button class="action-btn btn-behandeling" onclick="window.setBehandeling('${job.id}', this)">In behandeling →</button>`
-    : `<button class="action-btn btn-done" onclick="window.setDone('${job.id}', this)">✓ Afgerond</button>`;
-
   card.innerHTML = `
     <div class="card-header">
       <div>
         <div class="card-title">${job.job_title || '—'}</div>
         <div class="card-company">${job.company_name || '—'}${companyLiHtml}</div>
       </div>
-      <span class="status-badge ${statusClass}">${statusLabel}</span>
+      <span class="status-badge status-approved">Goedgekeurd</span>
     </div>
     <div class="card-meta">${metaChips}</div>
     ${infoBadgesHtml ? `<div class="info-badges">${infoBadgesHtml}</div>` : ''}
@@ -532,7 +527,6 @@ function buildCard(job) {
         ${recruiterOptions}
       </select>
       <button class="action-btn btn-assign" onclick="window.assignRecruiter('${job.id}', this)">Toewijzen</button>
-      ${actionBtns}
     </div>`;
 
   return card;
@@ -559,47 +553,11 @@ window.assignRecruiter = async function(id, btn) {
   if (error) { showToast('Fout bij opslaan: ' + error.message); btn.disabled = false; return; }
 
   const job = allJobs.find(j => j.id === id);
-  if (job) job.reviewed_by = recruiter;
+  if (job) { job.reviewed_by = recruiter; job.assigned_to = email; }
 
-  const card = document.querySelector(`.vacancy-card[data-id="${id}"]`);
-  if (card) {
-    const row = card.querySelector('.recruiter-row');
-    if (row) row.innerHTML = `<span class="recruiter-label">Toegewezen aan:</span><span class="recruiter-assigned">👤 ${recruiter}</span>`;
-  }
-
-  btn.disabled = false;
+  updateStats();
+  render();
   showToast(`Toegewezen aan ${recruiter}.`);
-};
-
-window.setBehandeling = async function(id, btn) {
-  btn.disabled = true;
-  const { error } = await supabase
-    .from('jobs')
-    .update({ review_status: 'in_behandeling', reviewed_at: new Date().toISOString() })
-    .eq('id', id);
-
-  if (error) { showToast('Fout bij opslaan: ' + error.message); btn.disabled = false; return; }
-
-  const job = allJobs.find(j => j.id === id);
-  if (job) job.review_status = 'in_behandeling';
-  updateStats();
-  render();
-  showToast('Status bijgewerkt: In behandeling.');
-};
-
-window.setDone = async function(id, btn) {
-  btn.disabled = true;
-  const { error } = await supabase
-    .from('jobs')
-    .update({ review_status: 'done', reviewed_at: new Date().toISOString() })
-    .eq('id', id);
-
-  if (error) { showToast('Fout bij opslaan: ' + error.message); btn.disabled = false; return; }
-
-  allJobs = allJobs.filter(j => j.id !== id);
-  updateStats();
-  render();
-  showToast('Vacature afgerond en uit pipeline verwijderd.');
 };
 
 let toastTimer;
