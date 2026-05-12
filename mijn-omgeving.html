@@ -944,8 +944,35 @@ async function assignGoVacature(jobId, description) {
   const seniority = determineSeniority(description);
   const now = new Date().toISOString();
 
+  // Determine assignee before writing to DB
+  const present = employees.filter(e => e.is_present);
+  let chosenEmail = currentUser.email;
+
+  if (present.length > 0) {
+    const { data: goJobs } = await supabase.from('jobs')
+      .select('assigned_to')
+      .eq('review_status', 'go')
+      .in('assigned_to', present.map(e => e.email));
+
+    const goCounts = {};
+    present.forEach(e => goCounts[e.email] = 0);
+    (goJobs || []).forEach(j => { if (j.assigned_to in goCounts) goCounts[j.assigned_to]++; });
+
+    const weighted = emp => goCounts[emp.email] / emp.fte_hours;
+    let candidates = present.filter(e => e.seniority_levels && e.seniority_levels.includes(seniority));
+    if (candidates.length === 0) candidates = present;
+    chosenEmail = candidates.reduce((best, emp) => weighted(emp) < weighted(best) ? emp : best).email;
+  }
+
+  // Single atomic write: review_status + assigned_to + seniority in one update
   const { error } = await supabase.from('jobs')
-    .update({ review_status: 'go', seniority_level: seniority, seniority_reviewed_at: now, reviewed_at: now })
+    .update({
+      review_status: 'go',
+      assigned_to: chosenEmail,
+      seniority_level: seniority,
+      seniority_reviewed_at: now,
+      reviewed_at: now,
+    })
     .eq('id', jobId);
 
   if (error) {
