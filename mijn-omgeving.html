@@ -176,7 +176,7 @@
   .view-toggle-btn.active { background: var(--blue-light); border-color: var(--blue-light); color: white; }
 
   /* ── Swipe lijst view ── */
-  .swipe-lijst-wrap { width: 100%; max-width: 700px; padding: 16px 20px 40px; display: flex; flex-direction: column; gap: 8px; }
+  .swipe-lijst-wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 16px 20px 40px; display: flex; flex-direction: column; gap: 8px; }
   .swipe-lijst-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: border-color 0.15s; }
   .swipe-lijst-row:hover { border-color: rgba(255,255,255,0.18); }
   .slr-title { font-weight: 600; font-size: 14px; line-height: 1.2; }
@@ -185,6 +185,15 @@
   .slr-chip { font-size: 11px; color: var(--text-muted); }
   .slr-source { font-size: 11px; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; white-space: nowrap; align-self: start; margin-top: 3px; }
   .slr-arrow { font-size: 14px; color: var(--text-muted); align-self: center; }
+
+  /* ── Card overlay (lijst → kaart) ── */
+  .card-overlay { position: fixed; inset: 0; z-index: 400; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+  .card-overlay.open { pointer-events: auto; opacity: 1; }
+  .card-overlay-backdrop { position: fixed; inset: 0; background: rgba(10,10,15,0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .card-overlay-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: var(--card-w); }
+  .card-overlay-close { position: absolute; top: -14px; right: -14px; width: 34px; height: 34px; background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; color: var(--text); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.15s, border-color 0.15s; line-height: 1; }
+  .card-overlay-close:hover { background: var(--surface); border-color: rgba(255,255,255,0.2); }
+  #ov-stack { position: relative; width: var(--card-w); height: 520px; margin-bottom: 14px; }
 
   /* ── Second Check tab ── */
   .sc2-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
@@ -300,7 +309,7 @@
       <button class="view-toggle-btn active" id="toggle-stapel" onclick="setSwipeView('stapel')">Stapel</button>
       <button class="view-toggle-btn" id="toggle-lijst" onclick="setSwipeView('lijst')">Lijst</button>
     </div>
-    <div id="swipe-lijst-view" style="display:none;width:100%">
+    <div id="swipe-lijst-view" style="display:none;width:100%;align-self:stretch">
       <div class="swipe-lijst-wrap" id="swipe-lijst-container"></div>
     </div>
     <div id="swipe-stapel-view" style="width:100%;display:flex;flex-direction:column;align-items:center">
@@ -347,6 +356,21 @@
   <!-- Tab: Analytics (Nils only) -->
   <div class="tab-panel" id="tab-analytics" style="display:none">
     <iframe class="analytics-frame" id="analytics-frame" src="" title="Analytics"></iframe>
+  </div>
+</div>
+
+<!-- Card overlay (lijst → kaart) -->
+<div id="card-overlay" class="card-overlay">
+  <div class="card-overlay-backdrop" onclick="closeCardOverlay()"></div>
+  <div class="card-overlay-inner">
+    <button class="card-overlay-close" onclick="closeCardOverlay()" title="Sluiten">×</button>
+    <div id="ov-stack"></div>
+    <div class="swipe-hint">← swipe of gebruik de knoppen →</div>
+    <div class="actions">
+      <button class="btn btn-nogo" onclick="swDoAction('nogo')" title="No go">✕</button>
+      <button class="btn btn-skip" onclick="swDoAction('skip')" title="Later">Later</button>
+      <button class="btn btn-go" onclick="swDoAction('go')" title="Go">✓</button>
+    </div>
   </div>
 </div>
 
@@ -426,7 +450,7 @@ let presenceChanged = false;
 
 // swipe state
 let swVacatures = [], swTotal = 0, swCurrent = 0, swDecisions = [], swActiveCard = null, swPendingNogoId = null;
-let swReturnToList = false;
+let swOverlayMode = false;
 
 // pipeline state
 let pipelineJobs = [], salesFilter = 'all';
@@ -674,9 +698,20 @@ window.openVacFromList = function(idx) {
     swVacatures[swCurrent] = swVacatures[idx];
     swVacatures[idx] = tmp;
   }
-  swReturnToList = true;
-  window.setSwipeView('stapel');
-  swRenderStack();
+  swOverlayMode = true;
+  const ovStack = document.getElementById('ov-stack');
+  ovStack.innerHTML = '';
+  const card = swBuildCard(swVacatures[swCurrent], 1, '');
+  ovStack.appendChild(card);
+  swActiveCard = card;
+  swSetupDrag(card);
+  document.getElementById('card-overlay').classList.add('open');
+};
+
+window.closeCardOverlay = function() {
+  swOverlayMode = false;
+  document.getElementById('card-overlay').classList.remove('open');
+  document.getElementById('ov-stack').innerHTML = '';
 };
 
 function swRenderStack() {
@@ -758,7 +793,7 @@ window.swDoAction = async function(action) {
     swVacatures.splice(swCurrent, 1);
     swVacatures.push(vac);
     setTimeout(() => {
-      if (swReturnToList) { swReturnToList = false; window.setSwipeView('lijst'); }
+      if (swOverlayMode) { window.closeCardOverlay(); renderSwipeLijst(); }
       else swRenderStack();
     }, 320);
     return;
@@ -774,13 +809,21 @@ window.swDoAction = async function(action) {
 
   if (action === 'nogo') {
     await supabase.from('jobs').update({ review_status: 'nogo', reviewed_at: new Date().toISOString() }).eq('id', vac.id);
-    setTimeout(() => { swCurrent++; showNogoPopup(vac); }, 320);
+    setTimeout(() => {
+      swCurrent++;
+      if (swOverlayMode) window.closeCardOverlay();
+      showNogoPopup(vac);
+    }, 320);
   } else {
     setTimeout(async () => {
       swCurrent++;
-      swRenderStack();
+      if (swOverlayMode) {
+        window.closeCardOverlay();
+        renderSwipeLijst();
+      } else {
+        swRenderStack();
+      }
       await assignGoVacature(vac.id, vac.job_description || '');
-      if (swReturnToList) { swReturnToList = false; window.setSwipeView('lijst'); }
     }, 320);
   }
 };
@@ -846,7 +889,7 @@ window.closeNogoPopup = function() {
   document.getElementById('nogo-popup').classList.remove('open');
   swPendingNogoId = null;
   swRenderStack();
-  if (swReturnToList) { swReturnToList = false; window.setSwipeView('lijst'); }
+  renderSwipeLijst();
 };
 
 window.swBackFromNogo = async function() {
