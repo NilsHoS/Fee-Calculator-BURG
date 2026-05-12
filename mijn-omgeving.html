@@ -944,24 +944,15 @@ async function assignGoVacature(jobId, description) {
   const seniority = determineSeniority(description);
   const now = new Date().toISOString();
 
-  await supabase.from('jobs').update({ review_status: 'go', seniority_level: seniority, seniority_reviewed_at: now }).eq('id', jobId);
+  const { error } = await supabase.from('jobs')
+    .update({ review_status: 'go', seniority_level: seniority, seniority_reviewed_at: now, reviewed_at: now })
+    .eq('id', jobId);
 
-  const present = employees.filter(e => e.is_present);
-  if (present.length === 0) return;
-
-  const { data: goJobs } = await supabase.from('jobs').select('assigned_to').eq('review_status', 'go').in('assigned_to', present.map(e => e.email));
-
-  const goCounts = {};
-  present.forEach(e => goCounts[e.email] = 0);
-  (goJobs || []).forEach(j => { if (j.assigned_to in goCounts) goCounts[j.assigned_to]++; });
-
-  const weighted = emp => goCounts[emp.email] / emp.fte_hours;
-
-  let candidates = present.filter(e => e.seniority_levels && e.seniority_levels.includes(seniority));
-  if (candidates.length === 0) candidates = present;
-
-  const chosen = candidates.reduce((best, emp) => weighted(emp) < weighted(best) ? emp : best);
-  await supabase.from('jobs').update({ assigned_to: chosen.email }).eq('id', jobId);
+  if (error) {
+    showToast('Fout bij opslaan GO: ' + error.message);
+    console.error('assignGoVacature error:', error);
+    return;
+  }
 
   try {
     await fetch('https://mvl1009.app.n8n.cloud/webhook/d9c398f5-d635-4fd2-b4ce-231b3bc087fe', {
