@@ -778,6 +778,7 @@ function swUpdateStats() {
   document.getElementById('sw-nogo').textContent = swDecisions.filter(d => d.action === 'nogo').length;
   document.getElementById('sw-left').textContent = swTotal - swCurrent;
   document.getElementById('sw-progress').style.width = swTotal ? (swCurrent / swTotal * 100) + '%' : '0%';
+  document.getElementById('badge-swipen').textContent = swTotal - swCurrent;
 }
 
 function swUpdateUndoBtn() {
@@ -795,6 +796,7 @@ window.swDoAction = async function(action) {
     setTimeout(() => {
       if (swOverlayMode) { window.closeCardOverlay(); renderSwipeLijst(); }
       else swRenderStack();
+      document.getElementById('badge-swipen').textContent = swTotal - swCurrent;
     }, 320);
     return;
   }
@@ -811,12 +813,14 @@ window.swDoAction = async function(action) {
     await supabase.from('jobs').update({ review_status: 'nogo', reviewed_at: new Date().toISOString() }).eq('id', vac.id);
     setTimeout(() => {
       swCurrent++;
+      document.getElementById('badge-swipen').textContent = swTotal - swCurrent;
       if (swOverlayMode) window.closeCardOverlay();
       showNogoPopup(vac);
     }, 320);
   } else {
     setTimeout(async () => {
       swCurrent++;
+      document.getElementById('badge-swipen').textContent = swTotal - swCurrent;
       if (swOverlayMode) {
         window.closeCardOverlay();
         renderSwipeLijst();
