@@ -94,6 +94,7 @@
   .sc-badge-industry { background: rgba(244,162,97,0.15); color: var(--amber); }
   .sc-desc-wrap { margin-bottom: 8px; overflow: hidden; }
   .sc-desc { font-size: 12px; color: var(--text-muted); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .sc-desc.expanded { display: block; -webkit-line-clamp: unset; overflow: visible; }
   .sc-read-more { background: none; border: none; color: var(--blue-light); font-size: 11px; cursor: pointer; padding: 4px 0 0; font-family: 'DM Sans', sans-serif; display: block; }
   .sc-recruiter { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
   .sc-recruiter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 3px; }
@@ -753,7 +754,7 @@ function swBuildCard(vac, zIndex, cls) {
     vac.datumGescraped ? `<div class="sc-meta-item"><span class="sc-meta-label">📅 Gevonden</span><span class="sc-meta-value">${esc(vac.datumGescraped)}</span></div>` : '',
   ].filter(Boolean).join('');
 
-  const desc = vac.job_description ? `<div class="sc-desc-wrap"><div class="sc-desc">${esc(vac.job_description)}</div><button class="sc-read-more" onclick="event.stopPropagation();openDescModal('${esc(vac.functie)} — ${esc(vac.bedrijf)}','${esc(vac.job_description)}')">Lees meer ↓</button></div>` : '';
+  const desc = vac.job_description ? `<div class="sc-desc-wrap"><div class="sc-desc">${esc(vac.job_description)}</div><button class="sc-read-more" onclick="event.stopPropagation();toggleSwipeDesc(this)">Lees meer ↓</button></div>` : '';
   const recruiter = vac.recruiter_name ? `<div class="sc-recruiter"><div class="sc-recruiter-label">Geplaatst door</div><div class="sc-recruiter-name">${esc(vac.recruiter_name)}</div></div>` : '<div style="margin-top:auto"></div>';
   const links = [
     vac.url ? `<a class="sc-link" href="${esc(vac.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ Vacature</a>` : '',
@@ -1217,6 +1218,12 @@ window.confirmApprove = async function() {
 };
 
 // ── Desc modal ─────────────────────────────────────────
+window.toggleSwipeDesc = function(btn) {
+  const descEl = btn.previousElementSibling;
+  const expanded = descEl.classList.toggle('expanded');
+  btn.textContent = expanded ? 'Lees minder ↑' : 'Lees meer ↓';
+};
+
 window.openDescModal = function(title, desc) {
   document.getElementById('desc-modal-title').textContent = title;
   document.getElementById('desc-modal-body').textContent = desc;
