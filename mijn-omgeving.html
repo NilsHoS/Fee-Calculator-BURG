@@ -1285,9 +1285,15 @@ window.confirmApprove = async function() {
 
 // ── Desc modal ─────────────────────────────────────────
 window.toggleSwipeDesc = function(btn) {
-  const descEl = btn.previousElementSibling;
-  const expanded = descEl.classList.toggle('expanded');
-  btn.textContent = expanded ? 'Lees minder ↑' : 'Lees meer ↓';
+  if (swOverlayMode) {
+    const descEl = btn.previousElementSibling;
+    const expanded = descEl.classList.toggle('expanded');
+    btn.textContent = expanded ? 'Lees minder ↑' : 'Lees meer ↓';
+  } else {
+    const vac = swVacatures[swCurrent];
+    const title = vac ? `${vac.functie} — ${vac.bedrijf}` : '';
+    openDescModal(title, btn.previousElementSibling.textContent);
+  }
 };
 
 window.openDescModal = function(title, desc) {
