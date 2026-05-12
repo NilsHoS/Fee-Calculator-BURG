@@ -248,26 +248,26 @@
   .sales-field { display: flex; flex-direction: column; gap: 5px; }
   .sales-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 500; }
 
-  .sales-status-select {
-    background: var(--surface);
+  .status-btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .status-btn {
+    background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
+    border-radius: 20px;
+    color: var(--text-muted);
     font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 8px 10px;
+    font-size: 12px;
+    padding: 5px 12px;
     cursor: pointer;
-    outline: none;
-    width: 100%;
-    transition: border-color 0.15s;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
-  .sales-status-select:focus { border-color: var(--blue-light); }
-  .sales-status-select option { background: #1c1c27; }
-  .sales-status-select[data-status="Hot lead"] { border-color: rgba(230,57,70,0.45); color: #e87070; }
-  .sales-status-select[data-status="Afgerond"] { border-color: rgba(29,185,84,0.45); color: var(--go); }
-  .sales-status-select[data-status="Gebeld"] { border-color: rgba(45,125,210,0.45); color: var(--blue-light); }
-  .sales-status-select[data-status="Gemaild"] { border-color: rgba(45,125,210,0.45); color: var(--blue-light); }
-  .sales-status-select[data-status="Geen reactie"] { border-color: rgba(244,162,97,0.45); color: var(--amber); }
+  .status-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .status-btn.active[data-status="Te contacteren"] { border-color: rgba(255,255,255,0.3); color: var(--text); background: rgba(255,255,255,0.06); }
+  .status-btn.active[data-status="Gebeld"] { border-color: rgba(45,125,210,0.6); color: var(--blue-light); background: rgba(45,125,210,0.1); }
+  .status-btn.active[data-status="Gemaild"] { border-color: rgba(45,125,210,0.6); color: var(--blue-light); background: rgba(45,125,210,0.1); }
+  .status-btn.active[data-status="Geen reactie"] { border-color: rgba(244,162,97,0.6); color: var(--amber); background: rgba(244,162,97,0.1); }
+  .status-btn.active[data-status="Hot lead"] { border-color: rgba(230,57,70,0.6); color: #e87070; background: rgba(230,57,70,0.1); }
+  .status-btn.active[data-status="Afgerond"] { border-color: rgba(29,185,84,0.6); color: var(--go); background: rgba(29,185,84,0.1); }
 
   .sales-notes-textarea {
     background: var(--surface);
@@ -579,8 +579,8 @@ function buildCard(job) {
   }
 
   const currentStatus = getStatus(job);
-  const statusOptions = SALES_STATUSES.map(s =>
-    `<option value="${esc(s)}" ${currentStatus === s ? 'selected' : ''}>${esc(s)}</option>`
+  const statusButtons = SALES_STATUSES.map(s =>
+    `<button class="status-btn${currentStatus === s ? ' active' : ''}" data-status="${esc(s)}" onclick="window.updateSalesStatus('${job.id}', '${esc(s)}')">${esc(s)}</button>`
   ).join('');
 
   const salesSection = `
@@ -588,9 +588,9 @@ function buildCard(job) {
       <div class="sales-section-title">Sales opvolging</div>
       <div class="sales-field">
         <label class="sales-label">Status</label>
-        <select class="sales-status-select" id="status-sel-${job.id}" data-status="${esc(currentStatus)}" onchange="window.updateSalesStatus('${job.id}', this)">
-          ${statusOptions}
-        </select>
+        <div class="status-btn-group" id="status-grp-${job.id}">
+          ${statusButtons}
+        </div>
       </div>
       <div class="sales-field">
         <label class="sales-label">Notities</label>
@@ -624,9 +624,13 @@ window.setFilter = function(filter) {
   render();
 };
 
-window.updateSalesStatus = async function(id, selectEl) {
-  const status = selectEl.value;
-  selectEl.dataset.status = status;
+window.updateSalesStatus = async function(id, status) {
+  const grp = document.getElementById('status-grp-' + id);
+  if (grp) {
+    grp.querySelectorAll('.status-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.status === status);
+    });
+  }
 
   const job = allJobs.find(j => j.id === id);
   if (job) job.sales_status = status;

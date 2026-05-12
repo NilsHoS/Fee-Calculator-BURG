@@ -434,14 +434,23 @@ async function loadVacatures() {
   showLoading();
   const { data, error } = await supabase
     .from('jobs')
-    .select('id, job_title, company_name, company_name_display, job_location, job_url, data_source, date_scraped, salary, employment_type, industry, recruiter_name, recruiter_headline, company_website, job_description')
-    .in('review_status', ['pending', 'new'])
-    .order('created_at', { ascending: false });
+    .select('id, job_title, company_name, company_name_display, job_location, job_url, data_source, date_scraped, posted_at, salary, employment_type, industry, recruiter_name, recruiter_headline, company_website, job_description')
+    .in('review_status', ['pending', 'new']);
 
   if (error) {
     showError('Kon vacatures niet laden.<br>' + error.message);
     return;
   }
+
+  const SOURCE_ORDER = { 'LinkedIn': 0, 'Indeed': 1, 'Werkzoeken.nl': 2 };
+  data.sort((a, b) => {
+    const ao = SOURCE_ORDER[a.data_source] ?? 99;
+    const bo = SOURCE_ORDER[b.data_source] ?? 99;
+    if (ao !== bo) return ao - bo;
+    const at = a.posted_at ? new Date(a.posted_at).getTime() : 0;
+    const bt = b.posted_at ? new Date(b.posted_at).getTime() : 0;
+    return bt - at;
+  });
 
   vacatures = data.map(mapRow);
   total = vacatures.length;
