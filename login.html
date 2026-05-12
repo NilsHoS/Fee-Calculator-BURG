@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>BURG — Inloggen</title>
+<link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue-light: #2d7dd2; --nogo: #e63946;
+    --bg: #0a0a0f; --surface: #13131a; --surface2: #1c1c27;
+    --border: rgba(255,255,255,0.08); --text: #f0f0f5; --text-muted: #8888a0;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+  .login-box { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; gap: 14px; }
+  .login-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
+  .login-logo span { color: var(--blue-light); }
+  .login-subtitle { font-size: 13px; color: var(--text-muted); margin-top: -4px; }
+  .login-form { display: flex; flex-direction: column; gap: 10px; }
+  .login-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 12px 14px; outline: none; width: 100%; transition: border-color 0.15s; }
+  .login-input:focus { border-color: var(--blue-light); }
+  .login-input::placeholder { color: var(--text-muted); }
+  .login-btn { background: var(--blue-light); color: white; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; padding: 13px; cursor: pointer; transition: opacity 0.15s; margin-top: 4px; }
+  .login-btn:hover { opacity: 0.85; }
+  .login-btn:disabled { opacity: 0.5; cursor: default; }
+  .login-error { font-size: 13px; color: var(--nogo); min-height: 18px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="login-box">
+  <div class="login-logo">BURG <span>Omgeving</span></div>
+  <p class="login-subtitle">Log in met je BURG-account</p>
+  <form class="login-form" id="login-form">
+    <input class="login-input" type="email" id="login-email" placeholder="E-mailadres" autocomplete="email" required>
+    <input class="login-input" type="password" id="login-password" placeholder="Wachtwoord" autocomplete="current-password" required>
+    <button class="login-btn" type="submit" id="login-btn">Inloggen</button>
+  </form>
+  <div class="login-error" id="login-error"></div>
+</div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient('https://ziwqshuabwcthqjspuso.supabase.co', 'sb_publishable_PxbxG-9ArQCsrgF9-lAM8g_-uglxVYU');
+
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) window.location.replace('/BURG-Apps/mijn-omgeving.html');
+});
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errDiv = document.getElementById('login-error');
+  btn.disabled = true; btn.textContent = 'Bezig…'; errDiv.textContent = '';
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('login-email').value.trim(),
+    password: document.getElementById('login-password').value,
+  });
+  if (error) {
+    errDiv.textContent = 'Inloggen mislukt: ' + error.message;
+    btn.disabled = false; btn.textContent = 'Inloggen';
+  } else {
+    window.location.replace('/BURG-Apps/mijn-omgeving.html');
+  }
+});
+</script>
+</body>
+</html>
