@@ -109,7 +109,7 @@
   .btn-nogo:hover { background: rgba(230,57,70,0.22); box-shadow: 0 0 20px rgba(230,57,70,0.2); }
   .btn-go { width: 62px; height: 62px; background: rgba(29,185,84,0.12); border: 2px solid rgba(29,185,84,0.4); color: var(--go); border-radius: 50%; font-size: 22px; }
   .btn-go:hover { background: rgba(29,185,84,0.22); box-shadow: 0 0 20px rgba(29,185,84,0.2); }
-  .btn-skip { width: 42px; height: 42px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 50%; font-size: 15px; }
+  .btn-skip { height: 42px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 20px; font-size: 12px; padding: 0 14px; font-family: 'DM Sans', sans-serif; }
   .btn-undo { width: 42px; height: 42px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 50%; font-size: 17px; }
   .btn-undo:not(:disabled):hover { background: var(--surface); color: var(--text); }
   .btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -169,6 +169,23 @@
   .summary-chip:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
   .chip-count { font-weight: 700; }
 
+  /* ── Swipe view toggle ── */
+  .swipe-view-toggle { display: flex; gap: 6px; padding: 16px 20px 0; width: 100%; max-width: 700px; }
+  .view-toggle-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 6px 18px; cursor: pointer; transition: all 0.15s; }
+  .view-toggle-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+  .view-toggle-btn.active { background: var(--blue-light); border-color: var(--blue-light); color: white; }
+
+  /* ── Swipe lijst view ── */
+  .swipe-lijst-wrap { width: 100%; max-width: 700px; padding: 16px 20px 40px; display: flex; flex-direction: column; gap: 8px; }
+  .swipe-lijst-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: border-color 0.15s; }
+  .swipe-lijst-row:hover { border-color: rgba(255,255,255,0.18); }
+  .slr-title { font-weight: 600; font-size: 14px; line-height: 1.2; }
+  .slr-company { font-size: 12px; color: var(--blue-light); margin-top: 2px; }
+  .slr-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+  .slr-chip { font-size: 11px; color: var(--text-muted); }
+  .slr-source { font-size: 11px; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; white-space: nowrap; align-self: start; margin-top: 3px; }
+  .slr-arrow { font-size: 14px; color: var(--text-muted); align-self: center; }
+
   /* ── Second Check tab ── */
   .sc2-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
   .sc2-card:hover { border-color: rgba(255,255,255,0.12); }
@@ -184,9 +201,13 @@
   .sc2-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; color: var(--text-muted); margin: 10px 0; }
   .sc2-detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
   .sc2-detail-value { color: var(--text); font-weight: 500; margin-top: 2px; }
+  .sc2-desc-toggle { background: none; border: none; color: var(--blue-light); font-size: 12px; cursor: pointer; padding: 8px 0 2px; font-family: 'DM Sans', sans-serif; text-align: left; display: block; }
+  .sc2-desc-body { font-size: 12px; color: var(--text-muted); line-height: 1.65; margin-top: 6px; white-space: pre-wrap; word-break: break-word; display: none; }
+  .sc2-desc-body.open { display: block; }
 
   /* ── Analytics tab ── */
-  .analytics-frame { width: 100%; border: none; min-height: 600px; background: var(--bg); }
+  #tab-analytics { padding: 0; border-radius: 0 0 16px 16px; overflow: hidden; }
+  .analytics-frame { width: 100%; height: calc(100vh - 260px); min-height: 500px; border: none; display: block; background: var(--bg); }
 
   /* ── Modals ── */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 600; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
@@ -275,6 +296,14 @@
 
   <!-- Tab: Swipen -->
   <div class="tab-panel active" id="tab-swipen" style="min-height:680px">
+    <div class="swipe-view-toggle">
+      <button class="view-toggle-btn active" id="toggle-stapel" onclick="setSwipeView('stapel')">Stapel</button>
+      <button class="view-toggle-btn" id="toggle-lijst" onclick="setSwipeView('lijst')">Lijst</button>
+    </div>
+    <div id="swipe-lijst-view" style="display:none;width:100%">
+      <div class="swipe-lijst-wrap" id="swipe-lijst-container"></div>
+    </div>
+    <div id="swipe-stapel-view" style="width:100%;display:flex;flex-direction:column;align-items:center">
     <div class="swipe-wrap">
       <div class="swipe-stats">
         <div class="stat"><strong id="sw-go">0</strong>Go</div>
@@ -292,10 +321,11 @@
       <div class="actions" id="sw-actions">
         <button class="btn btn-nogo" onclick="swDoAction('nogo')" title="No go">✕</button>
         <button class="btn btn-undo" id="sw-undo-btn" onclick="swUndo()" disabled>↩</button>
-        <button class="btn btn-skip" onclick="swDoAction('skip')" title="Later">◦◦</button>
+        <button class="btn btn-skip" onclick="swDoAction('skip')" title="Later">Later</button>
         <button class="btn btn-go" onclick="swDoAction('go')" title="Go">✓</button>
       </div>
     </div>
+    </div><!-- /swipe-stapel-view -->
   </div>
 
   <!-- Tab: Mijn Pipeline -->
@@ -396,6 +426,7 @@ let presenceChanged = false;
 
 // swipe state
 let swVacatures = [], swTotal = 0, swCurrent = 0, swDecisions = [], swActiveCard = null, swPendingNogoId = null;
+let swReturnToList = false;
 
 // pipeline state
 let pipelineJobs = [], salesFilter = 'all';
@@ -460,10 +491,33 @@ window.doLogout = async function() {
 // ── Init ───────────────────────────────────────────────
 async function init() {
   await loadEmployees();
+  await distributeUnassigned();
   loadSwipe();
   loadPipeline();
   loadSales();
   if (currentUser.email === NILS) loadSecondCheck();
+}
+
+async function distributeUnassigned() {
+  const present = employees.filter(e => e.is_present);
+  if (present.length === 0) return;
+
+  const { data: unassigned } = await supabase.from('jobs')
+    .select('id')
+    .eq('review_status', 'pending')
+    .is('assigned_to', null);
+
+  if (!unassigned || unassigned.length === 0) return;
+
+  const groups = {};
+  present.forEach(e => groups[e.email] = []);
+  unassigned.forEach((job, i) => groups[present[i % present.length].email].push(job.id));
+
+  await Promise.all(present.map(emp =>
+    groups[emp.email].length
+      ? supabase.from('jobs').update({ assigned_to: emp.email }).in('id', groups[emp.email])
+      : Promise.resolve()
+  ));
 }
 
 // ── Employees / Presence ───────────────────────────────
@@ -555,7 +609,7 @@ async function loadSwipe() {
   document.getElementById('sw-empty').style.display = 'none';
 
   const { data, error } = await supabase.from('jobs')
-    .select('id,job_title,company_name,job_location,job_url,data_source,date_scraped,salary,employment_type,industry,recruiter_name,recruiter_headline,company_website,job_description')
+    .select('id,job_title,company_name,job_location,job_url,data_source,date_scraped,posted_at,salary,employment_type,industry,recruiter_name,recruiter_headline,company_website,job_description')
     .eq('review_status', 'pending')
     .eq('assigned_to', currentUser.email);
 
@@ -575,11 +629,55 @@ function mapSwipeRow(r) {
     id: r.id, bedrijf: r.company_name || '—', functie: r.job_title || '—',
     locatie: r.job_location || '—', bron: r.data_source || null,
     url: r.job_url || null, datumGescraped: r.date_scraped ? new Date(r.date_scraped).toLocaleDateString('nl-NL') : null,
+    postedAt: r.posted_at ? new Date(r.posted_at).toLocaleDateString('nl-NL') : null,
     salary: r.salary || null, employment_type: r.employment_type || null, industry: r.industry || null,
     recruiter_name: r.recruiter_name || null, recruiter_headline: r.recruiter_headline || null,
     company_website: r.company_website || null, job_description: r.job_description || null,
   };
 }
+
+window.setSwipeView = function(mode) {
+  document.getElementById('toggle-stapel').classList.toggle('active', mode === 'stapel');
+  document.getElementById('toggle-lijst').classList.toggle('active', mode === 'lijst');
+  document.getElementById('swipe-stapel-view').style.display = mode === 'stapel' ? 'flex' : 'none';
+  document.getElementById('swipe-lijst-view').style.display = mode === 'lijst' ? '' : 'none';
+  if (mode === 'lijst') renderSwipeLijst();
+};
+
+function renderSwipeLijst() {
+  const container = document.getElementById('swipe-lijst-container');
+  const remaining = swVacatures.slice(swCurrent);
+  if (remaining.length === 0) {
+    container.innerHTML = '<div class="list-empty"><span>✅</span><p>Geen openstaande vacatures.</p></div>';
+    return;
+  }
+  container.innerHTML = remaining.map((vac, i) => `
+    <div class="swipe-lijst-row" onclick="openVacFromList(${swCurrent + i})">
+      <div>
+        <div class="slr-title">${esc(vac.functie)}</div>
+        <div class="slr-company">${esc(vac.bedrijf)}</div>
+        <div class="slr-meta">
+          <span class="slr-chip">📍 ${esc(vac.locatie)}</span>
+          ${vac.postedAt ? `<span class="slr-chip">📅 ${vac.postedAt}</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${vac.bron ? `<span class="slr-source">${esc(vac.bron)}</span>` : ''}
+        <span class="slr-arrow">›</span>
+      </div>
+    </div>`).join('');
+}
+
+window.openVacFromList = function(idx) {
+  if (idx !== swCurrent) {
+    const tmp = swVacatures[swCurrent];
+    swVacatures[swCurrent] = swVacatures[idx];
+    swVacatures[idx] = tmp;
+  }
+  swReturnToList = true;
+  window.setSwipeView('stapel');
+  swRenderStack();
+};
 
 function swRenderStack() {
   const stack = document.getElementById('sw-stack');
@@ -654,29 +752,36 @@ function swUpdateUndoBtn() {
 window.swDoAction = async function(action) {
   if (swCurrent >= swTotal || !swActiveCard) return;
   const vac = swVacatures[swCurrent];
+
+  if (action === 'skip') {
+    swActiveCard.classList.add('fly-up');
+    swVacatures.splice(swCurrent, 1);
+    swVacatures.push(vac);
+    setTimeout(() => {
+      if (swReturnToList) { swReturnToList = false; window.setSwipeView('lijst'); }
+      else swRenderStack();
+    }, 320);
+    return;
+  }
+
   swDecisions.push({ vac, action });
   swUpdateUndoBtn();
 
-  if (action !== 'skip') {
-    const animClass = action === 'go' ? 'fly-right' : 'fly-left';
-    swActiveCard.classList.add(animClass);
-    if (action === 'go') { const s = swActiveCard.querySelector('.stamp.go'); if (s) s.style.opacity = '1'; }
-    if (action === 'nogo') { const s = swActiveCard.querySelector('.stamp.nogo'); if (s) s.style.opacity = '1'; }
-  } else {
-    swActiveCard.classList.add('fly-up');
-  }
+  const animClass = action === 'go' ? 'fly-right' : 'fly-left';
+  swActiveCard.classList.add(animClass);
+  if (action === 'go') { const s = swActiveCard.querySelector('.stamp.go'); if (s) s.style.opacity = '1'; }
+  if (action === 'nogo') { const s = swActiveCard.querySelector('.stamp.nogo'); if (s) s.style.opacity = '1'; }
 
   if (action === 'nogo') {
     await supabase.from('jobs').update({ review_status: 'nogo', reviewed_at: new Date().toISOString() }).eq('id', vac.id);
     setTimeout(() => { swCurrent++; showNogoPopup(vac); }, 320);
-  } else if (action === 'go') {
+  } else {
     setTimeout(async () => {
       swCurrent++;
       swRenderStack();
       await assignGoVacature(vac.id, vac.job_description || '');
+      if (swReturnToList) { swReturnToList = false; window.setSwipeView('lijst'); }
     }, 320);
-  } else {
-    setTimeout(() => { swCurrent++; swRenderStack(); }, 320);
   }
 };
 
@@ -741,6 +846,7 @@ window.closeNogoPopup = function() {
   document.getElementById('nogo-popup').classList.remove('open');
   swPendingNogoId = null;
   swRenderStack();
+  if (swReturnToList) { swReturnToList = false; window.setSwipeView('lijst'); }
 };
 
 window.swBackFromNogo = async function() {
@@ -895,7 +1001,8 @@ function buildVcard(job, mode) {
         <div style="display:flex;align-items:flex-end">
           <button class="btn-approve" onclick="openApprove('${job.id}','${esc(job.job_title)}','${esc(job.company_name)}')">Alsnog goedkeuren</button>
         </div>
-      </div>`;
+      </div>
+      ${job.job_description ? `<div><button class="sc2-desc-toggle" onclick="toggleSc2Desc(this)">Vacaturetekst lezen ↓</button><div class="sc2-desc-body">${esc(job.job_description)}</div></div>` : ''}`;
     return card;
   }
 
@@ -1000,7 +1107,7 @@ async function loadSecondCheck() {
 
   const cutoff = new Date(Date.now() - 14 * 86400000).toISOString();
   const { data, error } = await supabase.from('jobs')
-    .select('id,job_title,company_name,job_location,job_url,data_source,salary,reviewed_at,nogo_reason,company_website')
+    .select('id,job_title,company_name,job_location,job_url,data_source,salary,reviewed_at,nogo_reason,company_website,job_description')
     .eq('review_status', 'nogo')
     .gte('reviewed_at', cutoff)
     .order('reviewed_at', { ascending: false });
@@ -1059,6 +1166,12 @@ window.openDescModal = function(title, desc) {
   document.getElementById('desc-modal').classList.remove('hidden');
 };
 window.closeDescModal = function() { document.getElementById('desc-modal').classList.add('hidden'); };
+
+window.toggleSc2Desc = function(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('open');
+  btn.textContent = open ? 'Vacaturetekst verbergen ↑' : 'Vacaturetekst lezen ↓';
+};
 
 </script>
 </body>
