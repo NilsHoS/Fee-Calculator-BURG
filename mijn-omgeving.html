@@ -645,6 +645,7 @@ window.switchTab = function(tab) {
     if (p.id === 'tab-' + tab) p.classList.add('active');
     else p.classList.remove('active');
   });
+  if (tab === 'swipen') loadSwipe();
   if (tab === 'vacatures') loadMijnVacatures();
   if (tab === 'secondcheck') loadSecondCheck();
   if (tab === 'analytics') {
@@ -858,6 +859,7 @@ window.swDoAction = async function(action) {
         swRenderStack();
       }
       await assignGoVacature(vac.id, vac.job_description || '');
+      loadMijnVacaturesBackground();
     }, 320);
   }
 };
@@ -990,6 +992,20 @@ async function loadMijnVacatures() {
   mvActiveFilter = 'all';
   renderMvSummary();
   renderMijnVacatures();
+}
+
+async function loadMijnVacaturesBackground() {
+  const { data, error } = await supabase.from('jobs')
+    .select('id, job_title, company_name, job_location, job_url, data_source, date_scraped, reviewed_at, enriched_at, company_website, company_phone, company_industry, company_linkedin, recruiter_name, recruiter_linkedin, recruiter_headline, company_address, salary, employment_type, industry, posted_at, contact_email, contact_phone, sales_status, sales_notes')
+    .eq('review_status', 'go')
+    .eq('assigned_to', currentUser.email)
+    .order('reviewed_at', { ascending: false });
+  if (error || !data) return;
+  mvJobs = data;
+  if (document.getElementById('tab-vacatures').classList.contains('active')) {
+    renderMvSummary();
+    renderMijnVacatures();
+  }
 }
 
 function getMvStatus(job) { return job.sales_status || 'Te contacteren'; }
@@ -1218,10 +1234,14 @@ window.confirmDoorsturen = async function() {
   const toEmail = document.getElementById('doorsturen-select').value;
   if (!doorstruenJobId || !toEmail) return;
   await supabase.from('jobs').update({ assigned_to: toEmail }).eq('id', doorstruenJobId);
+  const removedId = doorstruenJobId;
   closeDoorsturen();
   showToast('Vacature doorgestuurd.');
-  mvJobs = mvJobs.filter(j => j.id !== doorstruenJobId);
-  renderMijnVacatures();
+  mvJobs = mvJobs.filter(j => j.id !== removedId);
+  document.querySelector(`.vacancy-card[data-id="${removedId}"]`)?.remove();
+  renderMvSummary();
+  const filtered = mvActiveFilter === 'all' ? mvJobs : mvJobs.filter(j => getMvStatus(j) === mvActiveFilter);
+  if (filtered.length === 0) document.getElementById('mv-list').innerHTML = '<div class="list-empty"><span>📭</span><p>Geen vacatures in dit filter.</p></div>';
 };
 
 // ── Second Check tab ───────────────────────────────────
