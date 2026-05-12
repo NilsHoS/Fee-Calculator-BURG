@@ -170,6 +170,41 @@
   .summary-chip:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
   .chip-count { font-weight: 700; }
 
+  /* ── Mijn Vacatures tab ── */
+  .vacancy-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: border-color 0.15s; }
+  .vacancy-card:hover { border-color: rgba(255,255,255,0.14); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; line-height: 1.2; }
+  .card-company { font-size: 16px; color: var(--blue-light); font-weight: 600; margin-top: 4px; }
+  .status-badge-go { flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; background: rgba(29,185,84,0.15); color: var(--go); }
+  .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+  .info-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .info-badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .info-badge-salary { background: rgba(29,185,84,0.12); color: var(--go); }
+  .info-badge-type { background: rgba(45,125,210,0.12); color: var(--blue-light); }
+  .info-badge-industry { background: rgba(244,162,97,0.12); color: var(--amber); }
+  .li-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #0077b5; border-radius: 3px; font-size: 9px; font-weight: 800; color: white; text-decoration: none; font-family: 'Syne', sans-serif; vertical-align: middle; margin-left: 5px; flex-shrink: 0; line-height: 1; }
+  .li-badge:hover { opacity: 0.8; }
+  .contact-section { background: var(--surface); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .contact-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
+  .contact-grid { display: flex; flex-wrap: wrap; gap: 14px; }
+  .contact-block { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 4px; }
+  .contact-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+  .contact-person-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; }
+  .contact-person-headline { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .contact-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue-light); text-decoration: none; word-break: break-all; }
+  .contact-link:hover { text-decoration: underline; }
+  .contact-address { font-size: 12px; color: var(--text-muted); }
+  .apollo-tag { font-size: 9px; background: rgba(244,162,97,0.15); color: var(--amber); padding: 1px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
+  .apollo-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.45; font-style: italic; }
+  .enrich-section { margin-bottom: 14px; }
+  .enrich-details { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .enrich-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; }
+  .badge-no-apollo { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(150,150,150,0.15); border: 1px solid rgba(150,150,150,0.35); color: #999; }
+  .badge-not-enriched { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(244,162,97,0.18); border: 1px solid rgba(244,162,97,0.45); color: #f4a261; }
+  .badge-enriched { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(29,185,84,0.12); border: 1px solid rgba(29,185,84,0.35); color: var(--go); }
+  .sales-section { background: var(--surface); border-radius: 10px; padding: 12px 14px; margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+
   /* ── Swipe view toggle ── */
   .swipe-view-toggle { display: flex; gap: 6px; padding: 16px 20px 0; width: 100%; max-width: 700px; }
   .view-toggle-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 6px 18px; cursor: pointer; transition: all 0.15s; }
@@ -300,8 +335,7 @@
   <!-- Tab bar -->
   <div class="tab-bar" id="tab-bar">
     <button class="tab-btn active" data-tab="swipen" onclick="switchTab('swipen')">Swipen <span class="tab-badge" id="badge-swipen">0</span></button>
-    <button class="tab-btn" data-tab="pipeline" onclick="switchTab('pipeline')">Mijn Pipeline</button>
-    <button class="tab-btn" data-tab="sales" onclick="switchTab('sales')">Sales</button>
+    <button class="tab-btn" data-tab="vacatures" onclick="switchTab('vacatures')">Mijn Vacatures</button>
   </div>
 
   <!-- Tab: Swipen -->
@@ -338,15 +372,10 @@
     </div><!-- /swipe-stapel-view -->
   </div>
 
-  <!-- Tab: Mijn Pipeline -->
-  <div class="tab-panel" id="tab-pipeline">
-    <div class="list-section" id="pipeline-list"></div>
-  </div>
-
-  <!-- Tab: Sales -->
-  <div class="tab-panel" id="tab-sales">
-    <div class="sales-summary" id="sales-summary"></div>
-    <div class="list-section" id="sales-list"></div>
+  <!-- Tab: Mijn Vacatures -->
+  <div class="tab-panel" id="tab-vacatures">
+    <div class="sales-summary" id="mv-summary"></div>
+    <div class="list-section" id="mv-list"></div>
   </div>
 
   <!-- Tab: Second Check (Nils only) -->
@@ -453,8 +482,8 @@ let presenceChanged = false;
 let swVacatures = [], swTotal = 0, swCurrent = 0, swDecisions = [], swActiveCard = null, swPendingNogoId = null;
 let swOverlayMode = false;
 
-// pipeline state
-let pipelineJobs = [], salesFilter = 'all';
+// mijn vacatures state
+let mvJobs = [], mvActiveFilter = 'all';
 
 // second check state
 let sc2Jobs = [];
@@ -518,8 +547,7 @@ async function init() {
   await loadEmployees();
   await distributeUnassigned();
   loadSwipe();
-  loadPipeline();
-  loadSales();
+  loadMijnVacatures();
   if (currentUser.email === NILS) loadSecondCheck();
 }
 
@@ -616,8 +644,7 @@ window.switchTab = function(tab) {
     if (p.id === 'tab-' + tab) p.classList.add('active');
     else p.classList.remove('active');
   });
-  if (tab === 'pipeline') loadPipeline();
-  if (tab === 'sales') loadSales();
+  if (tab === 'vacatures') loadMijnVacatures();
   if (tab === 'secondcheck') loadSecondCheck();
   if (tab === 'analytics') {
     const frame = document.getElementById('analytics-frame');
@@ -943,133 +970,149 @@ async function assignGoVacature(jobId, description) {
   }
 }
 
-// ── Pipeline tab ───────────────────────────────────────
-async function loadPipeline() {
-  const container = document.getElementById('pipeline-list');
-  container.innerHTML = '<div class="list-loading"><div class="spinner"></div><span>Pipeline laden…</span></div>';
+// ── Mijn Vacatures tab ─────────────────────────────────
+async function loadMijnVacatures() {
+  const container = document.getElementById('mv-list');
+  container.innerHTML = '<div class="list-loading"><div class="spinner"></div><span>Vacatures laden…</span></div>';
+  document.getElementById('mv-summary').innerHTML = '';
 
   const { data, error } = await supabase.from('jobs')
-    .select('id,job_title,company_name,job_location,job_url,data_source,posted_at,salary,employment_type,industry,contact_email,contact_phone,company_website,company_linkedin,recruiter_name,recruiter_linkedin,sales_status,sales_notes,company_phone')
+    .select('id, job_title, company_name, job_location, job_url, data_source, date_scraped, reviewed_at, enriched_at, company_website, company_phone, company_industry, company_linkedin, recruiter_name, recruiter_linkedin, recruiter_headline, company_address, salary, employment_type, industry, posted_at, contact_email, contact_phone, sales_status, sales_notes')
     .eq('review_status', 'go')
     .eq('assigned_to', currentUser.email)
     .order('reviewed_at', { ascending: false });
 
   if (error) { container.innerHTML = `<div class="list-empty"><span>⚠️</span><p>${esc(error.message)}</p></div>`; return; }
 
-  pipelineJobs = data || [];
-  renderPipeline();
+  mvJobs = data || [];
+  mvActiveFilter = 'all';
+  renderMvSummary();
+  renderMijnVacatures();
 }
 
-function renderPipeline() {
-  const container = document.getElementById('pipeline-list');
-  if (pipelineJobs.length === 0) {
-    container.innerHTML = '<div class="list-empty"><span>📭</span><p>Nog geen GO-vacatures in jouw pipeline.</p></div>';
-    return;
-  }
-  container.innerHTML = '';
-  pipelineJobs.forEach(job => container.appendChild(buildVcard(job, 'pipeline')));
-}
+function getMvStatus(job) { return job.sales_status || 'Te contacteren'; }
 
-// ── Sales tab ──────────────────────────────────────────
-let salesJobs = [], salesActiveFilter = 'all';
-
-async function loadSales() {
-  const container = document.getElementById('sales-list');
-  container.innerHTML = '<div class="list-loading"><div class="spinner"></div><span>Leads laden…</span></div>';
-  document.getElementById('sales-summary').innerHTML = '';
-
-  const { data, error } = await supabase.from('jobs')
-    .select('id,job_title,company_name,job_location,job_url,data_source,salary,employment_type,industry,contact_email,contact_phone,company_website,company_linkedin,recruiter_name,recruiter_linkedin,recruiter_headline,company_address,company_phone,sales_status,sales_notes,enriched_at')
-    .eq('assigned_to', currentUser.email)
-    .eq('review_status', 'go')
-    .order('reviewed_at', { ascending: false });
-
-  if (error) { container.innerHTML = `<div class="list-empty"><span>⚠️</span><p>${esc(error.message)}</p></div>`; return; }
-
-  salesJobs = data || [];
-  salesActiveFilter = 'all';
-  renderSalesSummary();
-  renderSalesList();
-}
-
-function getSalesStatus(job) { return job.sales_status || 'Te contacteren'; }
-
-function renderSalesSummary() {
+function renderMvSummary() {
   const counts = {};
-  salesJobs.forEach(j => { const s = getSalesStatus(j); counts[s] = (counts[s] || 0) + 1; });
-  let html = `<button class="summary-chip ${salesActiveFilter === 'all' ? 'active' : ''}" onclick="setSalesFilter('all')">Alle <span class="chip-count">${salesJobs.length}</span></button>`;
+  mvJobs.forEach(j => { const s = getMvStatus(j); counts[s] = (counts[s] || 0) + 1; });
+  let html = `<button class="summary-chip ${mvActiveFilter === 'all' ? 'active' : ''}" onclick="setMvFilter('all')">Alle <span class="chip-count">${mvJobs.length}</span></button>`;
   SALES_STATUSES.forEach(s => {
-    if (counts[s]) html += `<button class="summary-chip ${salesActiveFilter === s ? 'active' : ''}" onclick="setSalesFilter('${s}')">${s} <span class="chip-count">${counts[s]}</span></button>`;
+    if (counts[s]) html += `<button class="summary-chip ${mvActiveFilter === s ? 'active' : ''}" onclick="setMvFilter('${s}')">${s} <span class="chip-count">${counts[s]}</span></button>`;
   });
-  document.getElementById('sales-summary').innerHTML = html;
+  document.getElementById('mv-summary').innerHTML = html;
 }
 
-function renderSalesList() {
-  const container = document.getElementById('sales-list');
-  const filtered = salesActiveFilter === 'all' ? salesJobs : salesJobs.filter(j => getSalesStatus(j) === salesActiveFilter);
+function renderMijnVacatures() {
+  const container = document.getElementById('mv-list');
+  const filtered = mvActiveFilter === 'all' ? mvJobs : mvJobs.filter(j => getMvStatus(j) === mvActiveFilter);
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="list-empty"><span>📭</span><p>Geen leads voor dit filter.</p></div>';
+    container.innerHTML = '<div class="list-empty"><span>📭</span><p>Geen vacatures in dit filter.</p></div>';
     return;
   }
   container.innerHTML = '';
-  filtered.forEach(job => container.appendChild(buildVcard(job, 'sales')));
+  filtered.forEach(job => container.appendChild(buildMvCard(job)));
 }
 
-window.setSalesFilter = function(filter) {
-  salesActiveFilter = filter;
-  renderSalesSummary();
-  renderSalesList();
+window.setMvFilter = function(filter) {
+  mvActiveFilter = filter;
+  renderMvSummary();
+  renderMijnVacatures();
 };
 
-// ── Shared vcard builder ───────────────────────────────
-function buildVcard(job, mode) {
+function buildMvCard(job) {
   const card = document.createElement('div');
-  card.className = mode === 'sc2' ? 'sc2-card' : 'vcard';
-  card.id = `vcard-${job.id}`;
+  card.className = 'vacancy-card';
+  card.dataset.id = job.id;
 
-  const metaItems = [
+  const postedStr = job.posted_at ? new Date(job.posted_at).toLocaleDateString('nl-NL') : null;
+  const dateStr = job.date_scraped
+    ? new Date(job.date_scraped).toLocaleDateString('nl-NL')
+    : job.reviewed_at ? new Date(job.reviewed_at).toLocaleDateString('nl-NL') : null;
+
+  const metaChips = [
     job.job_location ? `<span class="meta-chip">📍 ${esc(job.job_location)}</span>` : '',
-    job.data_source ? `<span class="meta-chip">🔍 ${esc(job.data_source)}</span>` : '',
-    job.salary ? `<span class="meta-chip" style="color:var(--go)">💶 ${esc(job.salary)}</span>` : '',
-    job.job_url ? `<span class="meta-chip"><a href="${esc(job.job_url)}" target="_blank" rel="noopener">↗ Bekijk</a></span>` : '',
-    job.company_website ? `<span class="meta-chip"><a href="${esc(job.company_website)}" target="_blank" rel="noopener">🌐 Website</a></span>` : '',
+    job.data_source  ? `<span class="meta-chip">🔍 ${esc(job.data_source)}</span>` : '',
+    postedStr ? `<span class="meta-chip">📅 Geplaatst op: ${postedStr}</span>` : (dateStr ? `<span class="meta-chip">📅 ${dateStr}</span>` : ''),
+    job.job_url ? `<span class="meta-chip">↗ <a href="${esc(job.job_url)}" target="_blank" rel="noopener">Bekijk vacature</a></span>` : '',
   ].filter(Boolean).join('');
 
-  const currentStatus = getSalesStatus(job);
+  const infoBadgesHtml = [
+    job.salary          ? `<span class="info-badge info-badge-salary">💶 ${esc(job.salary)}</span>` : '',
+    job.employment_type ? `<span class="info-badge info-badge-type">${esc(job.employment_type)}</span>` : '',
+    job.industry        ? `<span class="info-badge info-badge-industry">${esc(job.industry)}</span>` : '',
+  ].filter(Boolean).join('');
 
-  if (mode === 'sc2') {
-    const daysLeft = job.reviewed_at ? 14 - Math.floor((Date.now() - new Date(job.reviewed_at)) / 86400000) : null;
-    const cdClass = daysLeft === null ? 'normal' : daysLeft <= 3 ? 'urgent' : daysLeft <= 7 ? 'normal' : 'fine';
-    const cdText = daysLeft !== null ? `${daysLeft} dag${daysLeft !== 1 ? 'en' : ''} resterend` : 'Onbekend';
-    const reasonOptions = NOGO_REASONS.map(r => `<option value="${esc(r)}" ${job.nogo_reason === r ? 'selected' : ''}>${esc(r)}</option>`).join('');
+  const companyLiHtml = job.company_linkedin
+    ? ` <a class="li-badge" href="${esc(job.company_linkedin)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in</a>`
+    : '';
 
-    card.innerHTML = `
-      <div class="vcard-header">
-        <div><div class="vcard-title">${esc(job.job_title) || '—'}</div><div class="vcard-company">${esc(job.company_name) || '—'}</div></div>
-        <span class="sc2-countdown ${cdClass}">${cdText}</span>
+  const recruiterBlock = job.recruiter_name ? `
+    <div class="contact-block">
+      <div class="contact-block-label">Contactpersoon</div>
+      <div class="contact-person-name">${esc(job.recruiter_name)}${job.recruiter_linkedin ? ` <a class="li-badge" href="${esc(job.recruiter_linkedin)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in</a>` : ''}</div>
+      ${job.recruiter_headline ? `<div class="contact-person-headline">${esc(job.recruiter_headline)}</div>` : ''}
+    </div>` : '';
+
+  const hasCompanyContact = job.company_website || job.company_address;
+  const companyBlock = hasCompanyContact ? `
+    <div class="contact-block">
+      <div class="contact-block-label">Bedrijf</div>
+      ${job.company_website ? `<a class="contact-link" href="${esc(job.company_website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐 ${esc(job.company_website.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>` : ''}
+      ${job.company_address ? `<div class="contact-address">📍 ${esc(job.company_address)}</div>` : ''}
+    </div>` : '';
+
+  const apolloBlock = `
+    <div class="contact-block">
+      <div class="contact-block-label">Contact <span class="apollo-tag">Apollo</span></div>
+      ${job.contact_email
+        ? `<a class="contact-link" href="mailto:${esc(job.contact_email)}" onclick="event.stopPropagation()">✉ ${esc(job.contact_email)}</a>`
+        : `<span class="apollo-placeholder">✉ nog niet verrijkt</span>`}
+      ${job.contact_phone
+        ? `<a class="contact-link" href="tel:${esc(job.contact_phone)}" onclick="event.stopPropagation()">📞 ${esc(job.contact_phone)}</a>`
+        : `<span class="apollo-placeholder">📞 nog niet verrijkt</span>`}
+    </div>`;
+
+  const contactSectionHtml = `
+    <div class="contact-section">
+      <div class="contact-section-title">Contactinformatie</div>
+      <div class="contact-grid">
+        ${recruiterBlock}
+        ${companyBlock}
+        ${apolloBlock}
       </div>
-      <div class="vcard-meta">${metaItems}</div>
-      <div class="sc2-details">
-        <div><div class="sc2-detail-label">No-go reden</div>
-          <select class="sc2-nogo-reason" onchange="updateNogoReason('${job.id}', this.value)">
-            <option value="">— geen reden —</option>
-            ${reasonOptions}
-          </select>
-        </div>
-        <div style="display:flex;align-items:flex-end">
-          <button class="btn-approve" onclick="openApprove('${job.id}','${esc(job.job_title)}','${esc(job.company_name)}')">Alsnog goedkeuren</button>
-        </div>
-      </div>
-      ${job.job_description ? `<div><button class="sc2-desc-toggle" onclick="toggleSc2Desc(this)">Vacaturetekst lezen ↓</button><div class="sc2-desc-body">${esc(job.job_description)}</div></div>` : ''}`;
-    return card;
+    </div>`;
+
+  let enrichHtml;
+  if (job.enriched_at) {
+    const chips = [
+      job.company_industry ? `<span class="enrich-chip">🏭 ${esc(job.company_industry)}</span>` : '',
+      job.company_phone    ? `<span class="enrich-chip">📞 ${esc(job.company_phone)}</span>` : '',
+    ].filter(Boolean).join('');
+    enrichHtml = `<div class="enrich-section"><span class="badge-enriched">✓ Enriched</span>${chips ? `<div class="enrich-details">${chips}</div>` : ''}</div>`;
+  } else if (job.recruiter_linkedin) {
+    enrichHtml = `<div class="enrich-section"><span class="badge-not-enriched">⏳ Wacht op Apollo enrichment</span></div>`;
+  } else {
+    enrichHtml = `<div class="enrich-section"><span class="badge-no-apollo">— Geen Apollo beschikbaar</span></div>`;
   }
 
+  const currentStatus = getMvStatus(job);
   const statusButtons = SALES_STATUSES.map(s =>
-    `<button class="status-btn${currentStatus === s ? ' active' : ''}" data-status="${esc(s)}" onclick="updateSalesStatus('${job.id}','${esc(s)}')">${esc(s)}</button>`
+    `<button class="status-btn${currentStatus === s ? ' active' : ''}" data-status="${esc(s)}" onclick="updateSalesStatus('${job.id}', '${esc(s)}')">${esc(s)}</button>`
   ).join('');
 
-  const salesSection = mode === 'pipeline' ? `
-    <div class="vcard-sales">
+  card.innerHTML = `
+    <div class="card-header">
+      <div>
+        <div class="card-title">${esc(job.job_title) || '—'}</div>
+        <div class="card-company">${esc(job.company_name) || '—'}${companyLiHtml}</div>
+      </div>
+      <span class="status-badge-go">Go</span>
+    </div>
+    <div class="card-meta">${metaChips}</div>
+    ${infoBadgesHtml ? `<div class="info-badges">${infoBadgesHtml}</div>` : ''}
+    ${contactSectionHtml}
+    ${enrichHtml}
+    <div class="sales-section">
       <div class="sales-section-title">Sales opvolging</div>
       <div class="sales-field">
         <div class="sales-label">Status</div>
@@ -1083,27 +1126,48 @@ function buildVcard(job, mode) {
     </div>
     <div class="pipeline-actions">
       <button class="btn-doorsturen" onclick="openDoorsturen('${job.id}','${esc(job.job_title)}','${esc(job.company_name)}')">Doorsturen →</button>
-    </div>` : `
-    <div class="vcard-sales">
-      <div class="sales-section-title">Sales opvolging</div>
-      <div class="sales-field">
-        <div class="sales-label">Status</div>
-        <div class="status-btn-group" id="status-grp-${job.id}">${statusButtons}</div>
-      </div>
-      <div class="sales-field">
-        <div class="sales-label">Notities</div>
-        <textarea class="sales-notes-textarea" id="notes-${job.id}" placeholder="Voeg notities toe…" oninput="scheduleNotesSave('${job.id}', this.value)">${esc(job.sales_notes || '')}</textarea>
-        <div class="saving-indicator" id="notes-ind-${job.id}"></div>
-      </div>
     </div>`;
+
+  return card;
+}
+
+// ── Second Check vcard builder ─────────────────────────
+function buildVcard(job, mode) {
+  const card = document.createElement('div');
+  card.className = 'sc2-card';
+  card.id = `vcard-${job.id}`;
+
+  const metaItems = [
+    job.job_location ? `<span class="meta-chip">📍 ${esc(job.job_location)}</span>` : '',
+    job.data_source ? `<span class="meta-chip">🔍 ${esc(job.data_source)}</span>` : '',
+    job.salary ? `<span class="meta-chip" style="color:var(--go)">💶 ${esc(job.salary)}</span>` : '',
+    job.job_url ? `<span class="meta-chip"><a href="${esc(job.job_url)}" target="_blank" rel="noopener">↗ Bekijk</a></span>` : '',
+    job.company_website ? `<span class="meta-chip"><a href="${esc(job.company_website)}" target="_blank" rel="noopener">🌐 Website</a></span>` : '',
+  ].filter(Boolean).join('');
+
+  const daysLeft = job.reviewed_at ? 14 - Math.floor((Date.now() - new Date(job.reviewed_at)) / 86400000) : null;
+  const cdClass = daysLeft === null ? 'normal' : daysLeft <= 3 ? 'urgent' : daysLeft <= 7 ? 'normal' : 'fine';
+  const cdText = daysLeft !== null ? `${daysLeft} dag${daysLeft !== 1 ? 'en' : ''} resterend` : 'Onbekend';
+  const reasonOptions = NOGO_REASONS.map(r => `<option value="${esc(r)}" ${job.nogo_reason === r ? 'selected' : ''}>${esc(r)}</option>`).join('');
 
   card.innerHTML = `
     <div class="vcard-header">
       <div><div class="vcard-title">${esc(job.job_title) || '—'}</div><div class="vcard-company">${esc(job.company_name) || '—'}</div></div>
-      <span class="badge-go">Go</span>
+      <span class="sc2-countdown ${cdClass}">${cdText}</span>
     </div>
     <div class="vcard-meta">${metaItems}</div>
-    ${salesSection}`;
+    <div class="sc2-details">
+      <div><div class="sc2-detail-label">No-go reden</div>
+        <select class="sc2-nogo-reason" onchange="updateNogoReason('${job.id}', this.value)">
+          <option value="">— geen reden —</option>
+          ${reasonOptions}
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn-approve" onclick="openApprove('${job.id}','${esc(job.job_title)}','${esc(job.company_name)}')">Alsnog goedkeuren</button>
+      </div>
+    </div>
+    ${job.job_description ? `<div><button class="sc2-desc-toggle" onclick="toggleSc2Desc(this)">Vacaturetekst lezen ↓</button><div class="sc2-desc-body">${esc(job.job_description)}</div></div>` : ''}`;
   return card;
 }
 
@@ -1112,16 +1176,16 @@ window.updateSalesStatus = async function(id, status) {
   const grp = document.getElementById('status-grp-' + id);
   if (grp) grp.querySelectorAll('.status-btn').forEach(b => b.classList.toggle('active', b.dataset.status === status));
 
-  const job = [...pipelineJobs, ...salesJobs].find(j => j.id === id);
+  const job = mvJobs.find(j => j.id === id);
   if (job) job.sales_status = status;
 
   await supabase.from('jobs').update({ sales_status: status }).eq('id', id);
-  renderSalesSummary();
+  renderMvSummary();
   showToast('Status opgeslagen.');
 };
 
 window.scheduleNotesSave = function(id, value) {
-  const job = [...pipelineJobs, ...salesJobs].find(j => j.id === id);
+  const job = mvJobs.find(j => j.id === id);
   if (job) job.sales_notes = value;
   const ind = document.getElementById('notes-ind-' + id);
   if (ind) { ind.textContent = 'Opslaan…'; ind.className = 'saving-indicator active'; }
@@ -1154,8 +1218,8 @@ window.confirmDoorsturen = async function() {
   await supabase.from('jobs').update({ assigned_to: toEmail }).eq('id', doorstruenJobId);
   closeDoorsturen();
   showToast('Vacature doorgestuurd.');
-  pipelineJobs = pipelineJobs.filter(j => j.id !== doorstruenJobId);
-  renderPipeline();
+  mvJobs = mvJobs.filter(j => j.id !== doorstruenJobId);
+  renderMijnVacatures();
 };
 
 // ── Second Check tab ───────────────────────────────────
