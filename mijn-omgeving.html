@@ -930,6 +930,16 @@ async function assignGoVacature(jobId, description) {
 
   const chosen = candidates.reduce((best, emp) => weighted(emp) < weighted(best) ? emp : best);
   await supabase.from('jobs').update({ assigned_to: chosen.email }).eq('id', jobId);
+
+  try {
+    await fetch('https://mvl1009.app.n8n.cloud/webhook/d9c398f5-d635-4fd2-b4ce-231b3bc087fe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_id: jobId }),
+    });
+  } catch (e) {
+    console.warn('Webhook mislukt:', e);
+  }
 }
 
 // ── Pipeline tab ───────────────────────────────────────
