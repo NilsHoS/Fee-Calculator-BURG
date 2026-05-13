@@ -650,7 +650,7 @@ window.switchTab = function(tab) {
   if (tab === 'secondcheck') loadSecondCheck();
   if (tab === 'analytics') {
     const frame = document.getElementById('analytics-frame');
-    if (!frame.src || frame.src === window.location.href) frame.src = '/BURG-Apps/dashboard.html';
+    frame.src = '/BURG-Apps/dashboard.html';
   }
 };
 
