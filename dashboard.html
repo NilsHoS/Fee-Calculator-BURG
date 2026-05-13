@@ -190,12 +190,20 @@
     white-space: nowrap;
   }
 
-  .pill-te-contacteren { background: rgba(136,136,160,0.15); color: #8888a0; }
-  .pill-gebeld         { background: rgba(45,125,210,0.15);  color: var(--blue-light); }
-  .pill-gemaild        { background: rgba(45,125,210,0.1);   color: #7baee0; }
-  .pill-geen-reactie   { background: rgba(244,162,97,0.15);  color: var(--amber); }
-  .pill-hot-lead       { background: rgba(230,57,70,0.15);   color: var(--nogo); }
-  .pill-afgerond       { background: rgba(29,185,84,0.15);   color: var(--go); }
+  .pill-on-hold        { background: rgba(136,136,160,0.12); color: #8888a0; }
+  .pill-nieuwe-kans    { background: rgba(45,125,210,0.15);  color: var(--blue-light); }
+  .pill-gemaild        { background: rgba(100,160,220,0.12); color: #7baee0; }
+  .pill-lopend-contact { background: rgba(155,93,229,0.15);  color: var(--purple); }
+  .pill-hot            { background: rgba(230,57,70,0.15);   color: var(--nogo); }
+  .pill-jobpull        { background: rgba(244,162,97,0.15);  color: var(--amber); }
+  .pill-closed-won     { background: rgba(29,185,84,0.15);   color: var(--go); }
+  .pill-closed-loss    { background: rgba(230,57,70,0.08);   color: rgba(230,57,70,0.55); }
+
+  /* ── Pipeline Waarde ── */
+  .pipeline-total-box { background: var(--surface2); border-radius: 12px; padding: 20px 24px 18px; }
+  .pipeline-total-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
+  .pipeline-total-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 40px; color: var(--go); line-height: 1; margin-bottom: 6px; }
+  .pipeline-total-sub { font-size: 11px; color: var(--text-muted); }
 
   .total-badge {
     font-family: 'Syne', sans-serif;
@@ -254,6 +262,12 @@
     <div id="sales-content"></div>
   </div>
 
+  <!-- Pipeline Waarde — full width -->
+  <div class="card card-full">
+    <div class="card-title">Pipeline Waarde</div>
+    <div id="pipeline-content"></div>
+  </div>
+
 </div>
 
 <script type="module">
@@ -268,25 +282,41 @@ Chart.defaults.color = '#8888a0';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
 Chart.defaults.font.family = "'DM Sans', sans-serif";
 
-const SALES_STATUSES = ['Te contacteren', 'Gebeld', 'Gemaild', 'Geen reactie', 'Hot lead', 'Afgerond'];
+const SALES_STATUSES = ['On hold', 'Nieuwe kans', 'Gemaild', 'Lopend contact', 'Hot', 'Jobpull', 'Closed won', 'Closed loss'];
 
 const STATUS_COLORS = {
-  'Te contacteren': 'rgba(136,136,160,0.65)',
-  'Gebeld':         'rgba(45,125,210,0.75)',
+  'On hold':        'rgba(136,136,160,0.40)',
+  'Nieuwe kans':    'rgba(45,125,210,0.75)',
   'Gemaild':        'rgba(100,160,220,0.65)',
-  'Geen reactie':   'rgba(244,162,97,0.70)',
-  'Hot lead':       'rgba(230,57,70,0.75)',
-  'Afgerond':       'rgba(29,185,84,0.80)',
+  'Lopend contact': 'rgba(155,93,229,0.70)',
+  'Hot':            'rgba(230,57,70,0.75)',
+  'Jobpull':        'rgba(244,162,97,0.75)',
+  'Closed won':     'rgba(29,185,84,0.80)',
+  'Closed loss':    'rgba(230,57,70,0.30)',
 };
 
 const STATUS_PILL_CLASS = {
-  'Te contacteren': 'pill-te-contacteren',
-  'Gebeld':         'pill-gebeld',
+  'On hold':        'pill-on-hold',
+  'Nieuwe kans':    'pill-nieuwe-kans',
   'Gemaild':        'pill-gemaild',
-  'Geen reactie':   'pill-geen-reactie',
-  'Hot lead':       'pill-hot-lead',
-  'Afgerond':       'pill-afgerond',
+  'Lopend contact': 'pill-lopend-contact',
+  'Hot':            'pill-hot',
+  'Jobpull':        'pill-jobpull',
+  'Closed won':     'pill-closed-won',
+  'Closed loss':    'pill-closed-loss',
 };
+
+const PIPELINE_WEIGHTS = {
+  'On hold':        0,
+  'Nieuwe kans':    0.05,
+  'Gemaild':        0.10,
+  'Lopend contact': 0.15,
+  'Hot':            0.50,
+  'Jobpull':        0.75,
+  'Closed won':     1.00,
+  'Closed loss':    0,
+};
+const AVG_DEAL_VALUE = 17500;
 
 let charts = [];
 
@@ -318,6 +348,7 @@ async function loadData() {
   renderNogo(jobs);
   renderConversie(jobs);
   renderSales(jobs);
+  renderPipeline(jobs);
 
   document.getElementById('refresh-btn').disabled = false;
 }
@@ -510,10 +541,10 @@ function renderNogo(jobs) {
 // ── 4. Conversie ──
 
 function renderConversie(jobs) {
-  const approved  = jobs.filter(j => j.review_status === 'approved');
-  const afgerond  = approved.filter(j => j.sales_status === 'Afgerond');
+  const approved   = jobs.filter(j => j.review_status === 'approved');
+  const closedWon  = approved.filter(j => j.sales_status === 'Closed won');
   const inPipeline = approved.filter(j => j.assigned_to);
-  const pct = approved.length > 0 ? Math.round((afgerond.length / approved.length) * 100) : 0;
+  const pct = approved.length > 0 ? Math.round((closedWon.length / approved.length) * 100) : 0;
 
   document.getElementById('conversie-stats').innerHTML = `
     <div class="stat-box">
@@ -525,8 +556,8 @@ function renderConversie(jobs) {
       <div class="stat-label">Toegewezen aan sales</div>
     </div>
     <div class="stat-box">
-      <div class="stat-num green">${afgerond.length}</div>
-      <div class="stat-label">Afgerond</div>
+      <div class="stat-num green">${closedWon.length}</div>
+      <div class="stat-label">Closed won</div>
     </div>
     <div class="stat-box">
       <div class="stat-num green">${pct}%</div>
@@ -639,6 +670,59 @@ function renderSales(jobs) {
       }
     }
   }));
+}
+
+// ── 6. Pipeline Waarde ──
+
+function renderPipeline(jobs) {
+  const pipeline = jobs.filter(j => j.review_status === 'go' && j.assigned_to);
+
+  const counts = {};
+  SALES_STATUSES.forEach(s => counts[s] = 0);
+  pipeline.forEach(j => {
+    const s = j.sales_status || 'Nieuwe kans';
+    counts[s] = (counts[s] || 0) + 1;
+  });
+
+  let totalExpected = 0;
+  SALES_STATUSES.forEach(s => {
+    totalExpected += (counts[s] || 0) * (PIPELINE_WEIGHTS[s] || 0) * AVG_DEAL_VALUE;
+  });
+
+  const fmt = n => '€ ' + Math.round(n).toLocaleString('nl-NL');
+
+  const rows = SALES_STATUSES.map(s => {
+    const count = counts[s] || 0;
+    const pct = Math.round((PIPELINE_WEIGHTS[s] || 0) * 100);
+    const val = count * (PIPELINE_WEIGHTS[s] || 0) * AVG_DEAL_VALUE;
+    return `<tr>
+      <td><span class="pill ${STATUS_PILL_CLASS[s]}">${escHtml(s)}</span></td>
+      <td style="text-align:right">${count}</td>
+      <td style="text-align:right;color:var(--text-muted)">${pct}%</td>
+      <td style="text-align:right;font-weight:500;color:${val > 0 ? 'var(--text)' : 'var(--text-muted)'}">${fmt(val)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('pipeline-content').innerHTML = `
+    <div class="pipeline-total-box">
+      <div class="pipeline-total-label">Totale verwachte omzet</div>
+      <div class="pipeline-total-value">${fmt(totalExpected)}</div>
+      <div class="pipeline-total-sub">${pipeline.length} vacature${pipeline.length !== 1 ? 's' : ''} in pipeline &middot; gem. dealwaarde €&nbsp;17.500</div>
+    </div>
+    <div class="sales-table-wrap" style="margin-top:20px">
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th style="text-align:right">Vacatures</th>
+            <th style="text-align:right">Kans</th>
+            <th style="text-align:right">Verwachte waarde</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 // ── Helpers ──
