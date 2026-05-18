@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>BURG Analytics</title>
+<link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="./styles-dark.css">
+<style>
+  /* ── Dashboard: header override (brede layout) ── */
+  .header {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 18px 24px 14px;
+  }
+
+  /* ── Dashboard: loading-state volledig scherm ── */
+  .loading-state {
+    justify-content: center;
+    min-height: 55vh;
+  }
+
+  /* ── Refresh knop (alias voor btn-ghost met iets minder padding) ── */
+  .refresh-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .refresh-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .refresh-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* ── Pagina-specifiek ── */
+  canvas { display: block; width: 100% !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">BURG <span>Analytics</span></div>
+  <div class="header-right">
+    <button class="refresh-btn" id="refresh-btn" onclick="refresh()">↻ Vernieuwen</button>
+    <a class="back-link" href="/BURG-Apps/">← Terug</a>
+  </div>
+</div>
+
+<div id="loading" class="loading-state">
+  <div class="spinner"></div>
+  <span>Data laden…</span>
+</div>
+
+<div id="dashboard" class="dashboard" style="display:none">
+
+  <!-- Vacatures per bron -->
+  <div class="card">
+    <div class="card-title">Vacatures per bron</div>
+    <canvas id="chart-bronnen" height="220"></canvas>
+  </div>
+
+  <!-- Goes vs No-goes per week -->
+  <div class="card">
+    <div class="card-title">Goes vs No-goes per week</div>
+    <canvas id="chart-weekly" height="220"></canvas>
+  </div>
+
+  <!-- No-go redenen -->
+  <div class="card">
+    <div class="card-title">No-go redenen</div>
+    <canvas id="chart-nogo" height="220"></canvas>
+  </div>
+
+  <!-- Conversie -->
+  <div class="card">
+    <div class="card-title">Conversie</div>
+    <div class="stat-row" id="conversie-stats"></div>
+  </div>
+
+  <!-- Sales per medewerker — full width -->
+  <div class="card card-full">
+    <div class="card-title">Sales per medewerker</div>
+    <div id="sales-content"></div>
+  </div>
+
+  <!-- Pipeline Waarde — full width -->
+  <div class="card card-full">
+    <div class="card-title">Pipeline Waarde</div>
+    <div id="pipeline-content"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const supabase = createClient(
+  'https://ziwqshuabwcthqjspuso.supabase.co',
+  'sb_publishable_PxbxG-9ArQCsrgF9-lAM8g_-uglxVYU'
+);
+
+Chart.defaults.color = '#8888a0';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+const SALES_STATUSES = ['On hold', 'Nieuwe kans', 'Gemaild', 'Lopend contact', 'Hot', 'Jobpull', 'Closed won', 'Closed loss'];
+
+const STATUS_COLORS = {
+  'On hold':        'rgba(136,136,160,0.40)',
+  'Nieuwe kans':    'rgba(45,125,210,0.75)',
+  'Gemaild':        'rgba(100,160,220,0.65)',
+  'Lopend contact': 'rgba(155,93,229,0.70)',
+  'Hot':            'rgba(230,57,70,0.75)',
+  'Jobpull':        'rgba(244,162,97,0.75)',
+  'Closed won':     'rgba(29,185,84,0.80)',
+  'Closed loss':    'rgba(230,57,70,0.30)',
+};
+
+const STATUS_PILL_CLASS = {
+  'On hold':        'pill-on-hold',
+  'Nieuwe kans':    'pill-nieuwe-kans',
+  'Gemaild':        'pill-gemaild',
+  'Lopend contact': 'pill-lopend-contact',
+  'Hot':            'pill-hot',
+  'Jobpull':        'pill-jobpull',
+  'Closed won':     'pill-closed-won',
+  'Closed loss':    'pill-closed-loss',
+};
+
+const PIPELINE_WEIGHTS = {
+  'On hold':        0,
+  'Nieuwe kans':    0.05,
+  'Gemaild':        0.10,
+  'Lopend contact': 0.15,
+  'Hot':            0.50,
+  'Jobpull':        0.75,
+  'Closed won':     1.00,
+  'Closed loss':    0,
+};
+const AVG_DEAL_VALUE = 17500;
+
+let charts = [];
+
+function destroyCharts() {
+  charts.forEach(c => c.destroy());
+  charts = [];
+}
+
+async function loadData() {
+  setLoading(true);
+  destroyCharts();
+
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('id, review_status, nogo_reason, reviewed_at, data_source, assigned_to, sales_status')
+    .limit(10000);
+
+  if (error) {
+    document.getElementById('loading').innerHTML =
+      `<span style="color:#e63946">⚠️ Kon data niet laden: ${escHtml(error.message)}</span>`;
+    return;
+  }
+
+  setLoading(false);
+
+  const jobs = data || [];
+  renderBronnen(jobs);
+  renderWeekly(jobs);
+  renderNogo(jobs);
+  renderConversie(jobs);
+  renderSales(jobs);
+  renderPipeline(jobs);
+
+  document.getElementById('refresh-btn').disabled = false;
+}
+
+function setLoading(on) {
+  document.getElementById('loading').style.display = on ? 'flex' : 'none';
+  document.getElementById('dashboard').style.display = on ? 'none' : 'grid';
+  if (on) document.getElementById('refresh-btn').disabled = true;
+}
+
+// ── 1. Vacatures per bron ──
+
+function renderBronnen(jobs) {
+  const counts = {};
+  jobs.forEach(j => {
+    const src = j.data_source || 'Onbekend';
+    counts[src] = (counts[src] || 0) + 1;
+  });
+
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const labels = entries.map(e => e[0]);
+  const values = entries.map(e => e[1]);
+
+  const SOURCE_COLORS = {
+    'LinkedIn':        'rgba(0,119,181,0.75)',
+    'Indeed':          'rgba(89,71,187,0.75)',
+    'Werkzoeken.nl':   'rgba(45,125,210,0.75)',
+  };
+
+  const bgColors = labels.map(l => SOURCE_COLORS[l] || 'rgba(136,136,160,0.6)');
+
+  charts.push(new Chart(document.getElementById('chart-bronnen'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Vacatures',
+        data: values,
+        backgroundColor: bgColors,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#8888a0' } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888a0', precision: 0 } }
+      }
+    }
+  }));
+}
+
+// ── 2. Goes vs No-goes per week ──
+
+function isoWeek(dateStr) {
+  const d = new Date(dateStr);
+  const utc = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((utc - yearStart) / 86400000) + 1) / 7);
+  return `${utc.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+function renderWeekly(jobs) {
+  const weekData = {};
+
+  jobs.forEach(j => {
+    if (!j.reviewed_at) return;
+    const week = isoWeek(j.reviewed_at);
+    if (!weekData[week]) weekData[week] = { go: 0, nogo: 0 };
+    if (j.review_status === 'approved') weekData[week].go++;
+    else if (j.review_status === 'rejected') weekData[week].nogo++;
+  });
+
+  const allWeeks = Object.keys(weekData).sort();
+  const weeks = allWeeks.slice(-16);
+
+  if (weeks.length === 0) {
+    noData('chart-weekly');
+    return;
+  }
+
+  charts.push(new Chart(document.getElementById('chart-weekly'), {
+    type: 'line',
+    data: {
+      labels: weeks,
+      datasets: [
+        {
+          label: 'Go',
+          data: weeks.map(w => weekData[w].go),
+          borderColor: '#1db954',
+          backgroundColor: 'rgba(29,185,84,0.08)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+          pointBackgroundColor: '#1db954',
+        },
+        {
+          label: 'No-go',
+          data: weeks.map(w => weekData[w].nogo),
+          borderColor: '#e63946',
+          backgroundColor: 'rgba(230,57,70,0.06)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+          pointBackgroundColor: '#e63946',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: '#8888a0', boxWidth: 10, font: { size: 11 } }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#8888a0', font: { size: 10 }, maxRotation: 45 } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888a0', precision: 0 } }
+      }
+    }
+  }));
+}
+
+// ── 3. No-go redenen ──
+
+function renderNogo(jobs) {
+  const counts = {};
+  jobs
+    .filter(j => j.review_status === 'rejected' && j.nogo_reason)
+    .forEach(j => {
+      counts[j.nogo_reason] = (counts[j.nogo_reason] || 0) + 1;
+    });
+
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) {
+    noData('chart-nogo');
+    return;
+  }
+
+  const labels = entries.map(e => e[0]);
+  const values = entries.map(e => e[1]);
+
+  const PALETTE = [
+    'rgba(230,57,70,0.78)',
+    'rgba(244,162,97,0.78)',
+    'rgba(155,93,229,0.78)',
+    'rgba(45,125,210,0.78)',
+    'rgba(29,185,84,0.78)',
+    'rgba(136,136,160,0.78)',
+    'rgba(255,200,80,0.78)',
+  ];
+
+  charts.push(new Chart(document.getElementById('chart-nogo'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: PALETTE.slice(0, labels.length),
+        borderWidth: 2,
+        borderColor: '#13131a',
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#8888a0', boxWidth: 10, padding: 10, font: { size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = Math.round((ctx.parsed / total) * 100);
+              return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  }));
+}
+
+// ── 4. Conversie ──
+
+function renderConversie(jobs) {
+  const approved   = jobs.filter(j => j.review_status === 'approved');
+  const closedWon  = approved.filter(j => j.sales_status === 'Closed won');
+  const inPipeline = approved.filter(j => j.assigned_to);
+  const pct = approved.length > 0 ? Math.round((closedWon.length / approved.length) * 100) : 0;
+
+  document.getElementById('conversie-stats').innerHTML = `
+    <div class="stat-box">
+      <div class="stat-num blue">${approved.length}</div>
+      <div class="stat-label">Goedgekeurde vacatures</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num amber">${inPipeline.length}</div>
+      <div class="stat-label">Toegewezen aan sales</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num green">${closedWon.length}</div>
+      <div class="stat-label">Closed won</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num green">${pct}%</div>
+      <div class="stat-label">Conversieratio</div>
+    </div>
+  `;
+}
+
+// ── 5. Sales per medewerker ──
+
+function renderSales(jobs) {
+  const approved = jobs.filter(j => j.review_status === 'approved' && j.assigned_to);
+
+  if (approved.length === 0) {
+    document.getElementById('sales-content').innerHTML =
+      '<p style="color:var(--text-muted);font-size:13px">Geen toegewezen vacatures gevonden.</p>';
+    return;
+  }
+
+  const salesData = {};
+  approved.forEach(j => {
+    const person = j.assigned_to;
+    if (!salesData[person]) {
+      salesData[person] = { total: 0 };
+      SALES_STATUSES.forEach(s => salesData[person][s] = 0);
+    }
+    const status = j.sales_status || 'Te contacteren';
+    salesData[person][status] = (salesData[person][status] || 0) + 1;
+    salesData[person].total++;
+  });
+
+  const persons = Object.keys(salesData).sort((a, b) => salesData[b].total - salesData[a].total);
+
+  // Stacked bar chart
+  const canvasWrap = document.createElement('div');
+  const canvas = document.createElement('canvas');
+  canvas.id = 'chart-sales';
+  canvas.height = Math.max(120, persons.length * 36);
+  canvasWrap.appendChild(canvas);
+
+  // Table
+  const tableWrap = document.createElement('div');
+  tableWrap.className = 'sales-table-wrap';
+  tableWrap.style.marginTop = '24px';
+
+  let tableHtml = `
+    <table class="sales-table">
+      <thead>
+        <tr>
+          <th>Medewerker</th>
+          <th>Totaal</th>
+          <th>Status verdeling</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  persons.forEach(person => {
+    const d = salesData[person];
+    const displayName = person.includes('@') ? person.split('@')[0].replace(/\./g, ' ') : person;
+    const pills = SALES_STATUSES
+      .filter(s => d[s] > 0)
+      .map(s => `<span class="pill ${STATUS_PILL_CLASS[s]}">${escHtml(s)} ${d[s]}</span>`)
+      .join('');
+
+    tableHtml += `
+      <tr>
+        <td>
+          <div class="person-name">${escHtml(displayName)}</div>
+          <div class="person-sub">${escHtml(person)}</div>
+        </td>
+        <td><span class="total-badge">${d.total}</span></td>
+        <td><div class="pills">${pills}</div></td>
+      </tr>
+    `;
+  });
+
+  tableHtml += '</tbody></table>';
+  tableWrap.innerHTML = tableHtml;
+
+  const salesContent = document.getElementById('sales-content');
+  salesContent.innerHTML = '';
+  salesContent.appendChild(canvasWrap);
+  salesContent.appendChild(tableWrap);
+
+  charts.push(new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: persons.map(p => p.includes('@') ? p.split('@')[0] : p),
+      datasets: SALES_STATUSES.map(status => ({
+        label: status,
+        data: persons.map(p => salesData[p][status] || 0),
+        backgroundColor: STATUS_COLORS[status],
+        borderRadius: 3,
+        borderSkipped: false,
+      }))
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#8888a0', boxWidth: 10, padding: 10, font: { size: 11 } }
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888a0', precision: 0 } },
+        y: { stacked: true, grid: { display: false }, ticks: { color: '#8888a0', font: { size: 12 } } }
+      }
+    }
+  }));
+}
+
+// ── 6. Pipeline Waarde ──
+
+function renderPipeline(jobs) {
+  const pipeline = jobs.filter(j => j.review_status === 'go' && j.assigned_to);
+
+  const counts = {};
+  SALES_STATUSES.forEach(s => counts[s] = 0);
+  pipeline.forEach(j => {
+    const s = j.sales_status || 'Nieuwe kans';
+    counts[s] = (counts[s] || 0) + 1;
+  });
+
+  let totalExpected = 0;
+  SALES_STATUSES.forEach(s => {
+    totalExpected += (counts[s] || 0) * (PIPELINE_WEIGHTS[s] || 0) * AVG_DEAL_VALUE;
+  });
+
+  const fmt = n => '€ ' + Math.round(n).toLocaleString('nl-NL');
+
+  const rows = SALES_STATUSES.map(s => {
+    const count = counts[s] || 0;
+    const pct = Math.round((PIPELINE_WEIGHTS[s] || 0) * 100);
+    const val = count * (PIPELINE_WEIGHTS[s] || 0) * AVG_DEAL_VALUE;
+    return `<tr>
+      <td><span class="pill ${STATUS_PILL_CLASS[s]}">${escHtml(s)}</span></td>
+      <td style="text-align:right">${count}</td>
+      <td style="text-align:right;color:var(--text-muted)">${pct}%</td>
+      <td style="text-align:right;font-weight:500;color:${val > 0 ? 'var(--text)' : 'var(--text-muted)'}">${fmt(val)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('pipeline-content').innerHTML = `
+    <div class="pipeline-total-box">
+      <div class="pipeline-total-label">Totale verwachte omzet</div>
+      <div class="pipeline-total-value">${fmt(totalExpected)}</div>
+      <div class="pipeline-total-sub">${pipeline.length} vacature${pipeline.length !== 1 ? 's' : ''} in pipeline &middot; gem. dealwaarde €&nbsp;17.500</div>
+    </div>
+    <div class="sales-table-wrap" style="margin-top:20px">
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th style="text-align:right">Vacatures</th>
+            <th style="text-align:right">Kans</th>
+            <th style="text-align:right">Verwachte waarde</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ── Helpers ──
+
+function noData(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const wrap = canvas.closest('.card') || canvas.parentElement;
+  canvas.style.display = 'none';
+  const p = document.createElement('p');
+  p.style.cssText = 'color:var(--text-muted);font-size:13px;padding:20px 0';
+  p.textContent = 'Geen data beschikbaar.';
+  wrap.appendChild(p);
+}
+
+function escHtml(str) {
+  return str ? String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+}
+
+window.refresh = function() {
+  destroyCharts();
+  document.getElementById('sales-content').innerHTML = '';
+  loadData();
+};
+
+loadData();
+</script>
+</body>
+</html>

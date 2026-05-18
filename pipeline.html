@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>BURG Pipeline</title>
+<link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<link rel="stylesheet" href="./styles-dark.css">
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header--narrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<a class="back-link back-link--fixed" href="/BURG-Apps/">← Terug</a>
+
+<div class="header header--narrow">
+  <div class="logo">BURG <span>Pipeline</span></div>
+  <div class="stats">
+    <div class="stat"><strong id="count-te-wijzen">—</strong>Te wijzen</div>
+    <div class="stat"><strong id="count-toegewezen">—</strong>Toegewezen</div>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="te-wijzen" onclick="setFilter('te-wijzen')">Te wijzen</button>
+  <button class="filter-btn" data-filter="toegewezen" onclick="setFilter('toegewezen')">Toegewezen</button>
+  <button class="filter-btn" data-filter="all" onclick="setFilter('all')">Alle vacatures</button>
+</div>
+
+<div id="loading" class="loading-state">
+  <div class="spinner"></div>
+  <span>Pipeline laden…</span>
+</div>
+
+<div id="empty" class="empty-state" style="display:none">
+  <span>📭</span>
+  <p>Geen vacatures in deze categorie.</p>
+</div>
+
+<div class="list" id="list" style="display:none"></div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const supabase = createClient(
+  'https://ziwqshuabwcthqjspuso.supabase.co',
+  'sb_publishable_PxbxG-9ArQCsrgF9-lAM8g_-uglxVYU'
+);
+
+const RECRUITERS = ['Nils', 'Ludo', 'Pim', 'Diko', 'Joey', 'Ryan'];
+
+const RECRUITER_EMAILS = {
+  'Nils': 'nils.denherder@burgqhsse.nl',
+  'Ludo': 'ludo.vansoldt@burgqhsse.nl',
+  'Pim':  'pim.hartman@burgqhsse.nl',
+  'Diko': 'diko.warbie@burgqhsse.nl',
+  'Joey': 'joey.vanderveer@burgqhsse.nl',
+  'Ryan': 'ryan.devos@burgqhsse.nl',
+};
+
+let allJobs = [];
+let activeFilter = 'te-wijzen';
+
+async function load() {
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('list').style.display = 'none';
+  document.getElementById('empty').style.display = 'none';
+
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('id, job_title, company_name, job_location, job_url, data_source, date_scraped, review_status, reviewed_by, reviewed_at, enriched_at, company_website, company_phone, company_industry, company_linkedin, recruiter_name, recruiter_linkedin, recruiter_headline, company_address, salary, employment_type, industry, posted_at, contact_email, contact_phone, assigned_to')
+    .eq('review_status', 'approved')
+    .order('reviewed_at', { ascending: false });
+
+  document.getElementById('loading').style.display = 'none';
+
+  if (error) {
+    document.getElementById('empty').style.display = 'flex';
+    document.getElementById('empty').innerHTML = '<span>⚠️</span><p>Kon pipeline niet laden.<br>' + error.message + '</p>';
+    return;
+  }
+
+  allJobs = data || [];
+  updateStats();
+  render();
+}
+
+function updateStats() {
+  document.getElementById('count-te-wijzen').textContent = allJobs.filter(j => !j.assigned_to).length;
+  document.getElementById('count-toegewezen').textContent = allJobs.filter(j => !!j.assigned_to).length;
+}
+
+function filtered() {
+  if (activeFilter === 'all') return allJobs;
+  if (activeFilter === 'te-wijzen') return allJobs.filter(j => !j.assigned_to);
+  if (activeFilter === 'toegewezen') return allJobs.filter(j => !!j.assigned_to);
+  return allJobs;
+}
+
+function render() {
+  const list = document.getElementById('list');
+  const empty = document.getElementById('empty');
+  const jobs = filtered();
+
+  if (jobs.length === 0) {
+    list.style.display = 'none';
+    empty.style.display = 'flex';
+    empty.innerHTML = '<span>📭</span><p>Geen vacatures in deze categorie.</p>';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.style.display = 'flex';
+  list.innerHTML = '';
+
+  jobs.forEach(job => list.appendChild(buildCard(job)));
+}
+
+function esc(str) {
+  return str ? String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+}
+
+function buildCard(job) {
+  const card = document.createElement('div');
+  card.className = 'vacancy-card';
+  card.dataset.id = job.id;
+
+  const postedStr = job.posted_at
+    ? new Date(job.posted_at).toLocaleDateString('nl-NL')
+    : null;
+  const dateStr = job.date_scraped
+    ? new Date(job.date_scraped).toLocaleDateString('nl-NL')
+    : job.reviewed_at ? new Date(job.reviewed_at).toLocaleDateString('nl-NL') : null;
+
+  const metaChips = [
+    job.job_location ? `<span class="meta-chip">📍 ${job.job_location}</span>` : '',
+    job.data_source ? `<span class="meta-chip">🔍 ${job.data_source}</span>` : '',
+    postedStr ? `<span class="meta-chip">📅 Geplaatst op: ${postedStr}</span>` : (dateStr ? `<span class="meta-chip">📅 ${dateStr}</span>` : ''),
+    job.job_url ? `<span class="meta-chip">↗ <a href="${job.job_url}" target="_blank" rel="noopener">Bekijk vacature</a></span>` : '',
+  ].filter(Boolean).join('');
+
+  // Info badges
+  const infoBadgesHtml = [
+    job.salary ? `<span class="info-badge info-badge-salary">💶 ${esc(job.salary)}</span>` : '',
+    job.employment_type ? `<span class="info-badge info-badge-type">${esc(job.employment_type)}</span>` : '',
+    job.industry ? `<span class="info-badge info-badge-industry">${esc(job.industry)}</span>` : '',
+  ].filter(Boolean).join('');
+
+  // LinkedIn icon next to company name
+  const companyLiHtml = job.company_linkedin
+    ? ` <a class="li-badge" href="${esc(job.company_linkedin)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in</a>`
+    : '';
+
+  // Contact section blocks
+  const recruiterBlock = job.recruiter_name ? `
+    <div class="contact-block">
+      <div class="contact-block-label">Contactpersoon</div>
+      <div class="contact-person-name">${esc(job.recruiter_name)}${job.recruiter_linkedin ? ` <a class="li-badge" href="${esc(job.recruiter_linkedin)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in</a>` : ''}</div>
+      ${job.recruiter_headline ? `<div class="contact-person-headline">${esc(job.recruiter_headline)}</div>` : ''}
+    </div>` : '';
+
+  const hasCompanyContact = job.company_website || job.company_address;
+  const companyBlock = hasCompanyContact ? `
+    <div class="contact-block">
+      <div class="contact-block-label">Bedrijf</div>
+      ${job.company_website ? `<a class="contact-link" href="${esc(job.company_website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐 ${esc(job.company_website.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>` : ''}
+      ${job.company_address ? `<div class="contact-address">📍 ${esc(job.company_address)}</div>` : ''}
+    </div>` : '';
+
+  const apolloBlock = `
+    <div class="contact-block">
+      <div class="contact-block-label">Contact <span class="apollo-tag">Apollo</span></div>
+      ${job.contact_email
+        ? `<a class="contact-link" href="mailto:${esc(job.contact_email)}" onclick="event.stopPropagation()">✉ ${esc(job.contact_email)}</a>`
+        : `<span class="apollo-placeholder">✉ nog niet verrijkt</span>`}
+      ${job.contact_phone
+        ? `<a class="contact-link" href="tel:${esc(job.contact_phone)}" onclick="event.stopPropagation()">📞 ${esc(job.contact_phone)}</a>`
+        : `<span class="apollo-placeholder">📞 nog niet verrijkt</span>`}
+    </div>`;
+
+  const contactSectionHtml = `
+    <div class="contact-section">
+      <div class="contact-section-title">Contactinformatie</div>
+      <div class="contact-grid">
+        ${recruiterBlock}
+        ${companyBlock}
+        ${apolloBlock}
+      </div>
+    </div>`;
+
+  // Enrich section
+  let enrichHtml;
+  if (job.enriched_at) {
+    const chips = [
+      job.company_industry ? `<span class="enrich-chip">🏭 ${job.company_industry}</span>` : '',
+      job.company_phone    ? `<span class="enrich-chip">📞 ${job.company_phone}</span>` : '',
+    ].filter(Boolean).join('');
+    enrichHtml = `<div class="enrich-section">
+      <span class="badge-enriched">✓ Enriched</span>
+      ${chips ? `<div class="enrich-details">${chips}</div>` : ''}
+    </div>`;
+  } else if (job.recruiter_linkedin) {
+    enrichHtml = `<div class="enrich-section">
+      <span class="badge-not-enriched">⏳ Wacht op Apollo enrichment</span>
+    </div>`;
+  } else {
+    enrichHtml = `<div class="enrich-section">
+      <span class="badge-no-apollo">— Geen Apollo beschikbaar</span>
+    </div>`;
+  }
+
+  const recruiterOptions = RECRUITERS.map(r =>
+    `<option value="${r}" ${job.reviewed_by === r ? 'selected' : ''}>${r}</option>`
+  ).join('');
+
+  const assignedHtml = job.reviewed_by
+    ? `<span class="recruiter-label">Toegewezen aan:</span><span class="recruiter-assigned">👤 ${job.reviewed_by}</span>`
+    : `<span class="recruiter-label">Nog niet toegewezen</span>`;
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div>
+        <div class="card-title--vacancy">${job.job_title || '—'}</div>
+        <div class="card-company">${job.company_name || '—'}${companyLiHtml}</div>
+      </div>
+      <span class="status-badge status-approved">Goedgekeurd</span>
+    </div>
+    <div class="card-meta">${metaChips}</div>
+    ${infoBadgesHtml ? `<div class="info-badges">${infoBadgesHtml}</div>` : ''}
+    ${contactSectionHtml}
+    ${enrichHtml}
+    <div class="recruiter-row">${assignedHtml}</div>
+    <div class="actions-row">
+      <select class="recruiter-select" id="sel-${job.id}">
+        <option value="">Kies recruiter…</option>
+        ${recruiterOptions}
+      </select>
+      <button class="action-btn btn-assign" onclick="window.assignRecruiter('${job.id}', this)">Toewijzen</button>
+    </div>`;
+
+  return card;
+}
+
+window.setFilter = function(filter) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+  render();
+};
+
+window.assignRecruiter = async function(id, btn) {
+  const select = document.getElementById('sel-' + id);
+  const recruiter = select.value;
+  if (!recruiter) { showToast('Selecteer eerst een recruiter.'); return; }
+
+  btn.disabled = true;
+  const email = RECRUITER_EMAILS[recruiter] || null;
+  const { error } = await supabase
+    .from('jobs')
+    .update({ reviewed_by: recruiter, assigned_to: email, reviewed_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) { showToast('Fout bij opslaan: ' + error.message); btn.disabled = false; return; }
+
+  const job = allJobs.find(j => j.id === id);
+  if (job) { job.reviewed_by = recruiter; job.assigned_to = email; }
+
+  updateStats();
+  render();
+  showToast(`Toegewezen aan ${recruiter}.`);
+};
+
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+load();
+</script>
+</body>
+</html>

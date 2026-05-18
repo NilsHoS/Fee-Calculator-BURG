@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>BURG — Inloggen</title>
+<link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<link rel="stylesheet" href="./styles-dark.css">
+<style>
+  body { display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+</style>
+</head>
+<body>
+<div class="login-box">
+  <div class="login-logo">BURG <span>Omgeving</span></div>
+  <p class="login-subtitle">Log in met je BURG-account</p>
+  <form class="login-form" id="login-form">
+    <input class="login-input" type="email" id="login-email" placeholder="E-mailadres" autocomplete="email" required>
+    <input class="login-input" type="password" id="login-password" placeholder="Wachtwoord" autocomplete="current-password" required>
+    <button class="btn-primary" type="submit" id="login-btn">Inloggen</button>
+  </form>
+  <div class="login-error" id="login-error"></div>
+</div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient('https://ziwqshuabwcthqjspuso.supabase.co', 'sb_publishable_PxbxG-9ArQCsrgF9-lAM8g_-uglxVYU');
+
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) window.location.replace('/BURG-Apps/mijn-omgeving.html');
+});
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errDiv = document.getElementById('login-error');
+  btn.disabled = true; btn.textContent = 'Bezig…'; errDiv.textContent = '';
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('login-email').value.trim(),
+    password: document.getElementById('login-password').value,
+  });
+  if (error) {
+    errDiv.textContent = 'Inloggen mislukt: ' + error.message;
+    btn.disabled = false; btn.textContent = 'Inloggen';
+  } else {
+    window.location.replace('/BURG-Apps/mijn-omgeving.html');
+  }
+});
+</script>
+</body>
+</html>

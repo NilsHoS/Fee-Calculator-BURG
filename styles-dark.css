@@ -1,0 +1,1155 @@
+/* ============================================================
+   BURG QHSSE — Donker design systeem
+   Gebruikt door: dashboard, analytics, sales, pipeline, login,
+                  mijn-omgeving en toekomstige app-pagina's.
+
+   Licht design systeem (tools): styles.css
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+
+/* ============================================================
+   1. RESET
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ============================================================
+   2. DESIGN TOKENS
+   ============================================================ */
+
+:root {
+  /* Merk kleuren */
+  --blue:        #0f3460;
+  --blue-mid:    #1a4f8c;
+  --blue-light:  #2d7dd2;
+
+  /* Status kleuren */
+  --go:    #1db954;
+  --nogo:  #e63946;
+  --amber: #f4a261;
+
+  /* Accent */
+  --purple: #9b5de5;
+
+  /* Achtergrond & oppervlakken */
+  --bg:       #0a0a0f;
+  --surface:  #13131a;
+  --surface2: #1c1c27;
+
+  /* Randen & tekst */
+  --border:     rgba(255, 255, 255, 0.08);
+  --text:       #f0f0f5;
+  --text-muted: #8888a0;
+}
+
+
+/* ============================================================
+   3. BASIS — BODY & TYPOGRAFIE
+   ============================================================ */
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+
+/* ============================================================
+   4. NAVIGATIE — HEADER & LOGO
+   ============================================================ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 10px;
+}
+
+/* Analytics-pagina gebruikt een bredere max-width */
+.header--wide {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 18px 24px 14px;
+}
+
+/* Standaard app-breedte (pipeline, sales) */
+.header--narrow {
+  width: 100%;
+  max-width: 700px;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.logo span {
+  color: var(--blue-light);
+}
+
+/* Terugknop — zowel inline (dashboard) als fixed (pipeline, sales) */
+.back-link {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+.back-link--fixed {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  z-index: 200;
+}
+
+/* Header actiebalk rechts */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+
+/* ============================================================
+   5. KNOPPEN
+   ============================================================ */
+
+/* Ghost knop — transparante rand (refresh, logout) */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Primaire knop — blauw gevuld (login) */
+.btn-primary {
+  background: var(--blue-light);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Actieknop — kleine gekleurde knop op kaarten */
+.action-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+.action-btn:hover {
+  opacity: 0.85;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Kleurvarianten voor actieknoppen */
+.btn-assign {
+  background: rgba(155, 93, 229, 0.15);
+  border-color: rgba(155, 93, 229, 0.4);
+  color: var(--purple);
+}
+
+.btn-behandeling {
+  background: rgba(45, 125, 210, 0.15);
+  border-color: rgba(45, 125, 210, 0.4);
+  color: var(--blue-light);
+}
+
+.btn-done {
+  background: rgba(29, 185, 84, 0.15);
+  border-color: rgba(29, 185, 84, 0.4);
+  color: var(--go);
+}
+
+
+/* ============================================================
+   6. FILTER- EN STATUSBALK (pills rij)
+   ============================================================ */
+
+/* Scrollbare filterbalk */
+.filters,
+.status-summary {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 20px 14px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Filter- of statusknop als chip */
+.filter-btn,
+.summary-chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-btn.active,
+.summary-chip.active {
+  background: var(--blue-light);
+  border-color: var(--blue-light);
+  color: white;
+}
+
+.filter-btn:hover:not(.active),
+.summary-chip:hover:not(.active) {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+
+.summary-chip .chip-count {
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   7. KAARTEN
+   ============================================================ */
+
+/* Basis kaart — analytics dashboard */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 20px 16px;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+/* Vacaturekaart — pipeline & sales */
+.vacancy-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.15s;
+}
+
+.vacancy-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Kaart header: titel links, badge rechts */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-title--vacancy {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.card-company {
+  font-size: 16px;
+  color: var(--blue-light);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Meta-chips rij (locatie, bron, datum, link) */
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.meta-chip a {
+  color: var(--blue-light);
+  text-decoration: none;
+}
+
+.meta-chip a:hover {
+  text-decoration: underline;
+}
+
+
+/* ============================================================
+   8. STATISTIEKEN (dashboard overzicht)
+   ============================================================ */
+
+.stat-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 110px;
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 16px 14px;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 36px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+/* Kleurmodifiers voor stat-num */
+.stat-num.blue  { color: var(--blue-light); }
+.stat-num.green { color: var(--go); }
+.stat-num.amber { color: var(--amber); }
+
+/* Kleine stat naast logo (pipeline header) */
+.stats {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat strong {
+  font-size: 16px;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   9. BADGES & STATUS-INDICATOREN
+   ============================================================ */
+
+/* Status badge op kaart (Goedgekeurd, Go, In behandeling) */
+.status-badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+.status-approved,
+.status-badge-go {
+  background: rgba(29, 185, 84, 0.15);
+  color: var(--go);
+}
+
+.status-in_behandeling {
+  background: rgba(45, 125, 210, 0.15);
+  color: var(--blue-light);
+}
+
+/* Info badges: salaris, type, branche */
+.info-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.info-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-badge-salary   { background: rgba(29, 185, 84, 0.12);  color: var(--go); }
+.info-badge-type     { background: rgba(45, 125, 210, 0.12); color: var(--blue-light); }
+.info-badge-industry { background: rgba(244, 162, 97, 0.12); color: var(--amber); }
+
+/* Enrichment badges */
+.badge-enriched,
+.badge-not-enriched,
+.badge-no-apollo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.badge-enriched {
+  background: rgba(29, 185, 84, 0.12);
+  border: 1px solid rgba(29, 185, 84, 0.35);
+  color: var(--go);
+}
+
+.badge-not-enriched {
+  background: rgba(244, 162, 97, 0.18);
+  border: 1px solid rgba(244, 162, 97, 0.45);
+  color: #f4a261;
+}
+
+.badge-no-apollo {
+  background: rgba(150, 150, 150, 0.15);
+  border: 1px solid rgba(150, 150, 150, 0.35);
+  color: #999;
+}
+
+/* Pills — sales pipeline status (dashboard tabel) */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pill-on-hold        { background: rgba(136, 136, 160, 0.12); color: #8888a0; }
+.pill-nieuwe-kans    { background: rgba(45, 125, 210, 0.15);  color: var(--blue-light); }
+.pill-gemaild        { background: rgba(100, 160, 220, 0.12); color: #7baee0; }
+.pill-lopend-contact { background: rgba(155, 93, 229, 0.15);  color: var(--purple); }
+.pill-hot            { background: rgba(230, 57, 70, 0.15);   color: var(--nogo); }
+.pill-jobpull        { background: rgba(244, 162, 97, 0.15);  color: var(--amber); }
+.pill-closed-won     { background: rgba(29, 185, 84, 0.15);   color: var(--go); }
+.pill-closed-loss    { background: rgba(230, 57, 70, 0.08);   color: rgba(230, 57, 70, 0.55); }
+
+/* LinkedIn mini-badge (in-knop naast bedrijfsnaam) */
+.li-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #0077b5;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  text-decoration: none;
+  font-family: 'Syne', sans-serif;
+  vertical-align: middle;
+  margin-left: 5px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.li-badge:hover {
+  opacity: 0.8;
+}
+
+/* Recruiter-naam badge */
+.recruiter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.recruiter-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.recruiter-assigned {
+  font-size: 13px;
+  color: var(--purple);
+  font-weight: 500;
+}
+
+/* Totaalbadge in tabellen */
+.total-badge {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+
+
+/* ============================================================
+   10. CONTACT SECTIE (vacaturekaart blok)
+   ============================================================ */
+
+.contact-section {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.contact-section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.contact-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.contact-block {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-block-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.contact-person-name {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.contact-person-headline {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--blue-light);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+}
+
+.contact-address {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Apollo enrichment tag inline in label */
+.apollo-tag {
+  font-size: 9px;
+  background: rgba(244, 162, 97, 0.15);
+  color: var(--amber);
+  padding: 1px 6px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 500;
+}
+
+.apollo-placeholder {
+  font-size: 12px;
+  color: var(--text-muted);
+  opacity: 0.45;
+  font-style: italic;
+}
+
+
+/* ============================================================
+   11. ENRICHMENT SECTIE
+   ============================================================ */
+
+.enrich-section {
+  margin-bottom: 14px;
+}
+
+.enrich-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.enrich-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.enrich-chip a {
+  color: var(--blue-light);
+  text-decoration: none;
+}
+
+.enrich-chip a:hover {
+  text-decoration: underline;
+}
+
+
+/* ============================================================
+   12. FORMULIERELEMENTEN (donker thema)
+   ============================================================ */
+
+/* Login box container */
+.login-box {
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.login-logo span {
+  color: var(--blue-light);
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: -4px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Tekst- en wachtwoordinvoer */
+.login-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 12px 14px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.login-input:focus {
+  border-color: var(--blue-light);
+}
+
+.login-input::placeholder {
+  color: var(--text-muted);
+}
+
+.login-error {
+  font-size: 13px;
+  color: var(--nogo);
+  min-height: 18px;
+  text-align: center;
+}
+
+/* Select dropdown */
+.recruiter-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 7px 10px;
+  cursor: pointer;
+  outline: none;
+  flex: 1;
+  min-width: 140px;
+  max-width: 200px;
+}
+
+.recruiter-select:focus {
+  border-color: var(--blue-light);
+}
+
+.recruiter-select option {
+  background: #1c1c27;
+}
+
+/* Textarea */
+.sales-notes-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 8px 10px;
+  width: 100%;
+  resize: vertical;
+  min-height: 72px;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+
+.sales-notes-textarea:focus {
+  border-color: var(--blue-light);
+}
+
+.sales-notes-textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+
+/* ============================================================
+   13. SALES SECTIE (statusbeheer per lead)
+   ============================================================ */
+
+.sales-section {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sales-section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.sales-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sales-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Statusknoppengroep */
+.status-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.status-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.status-btn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+
+/* Actieve statusknop per statuswaarde */
+.status-btn.active[data-status="Te contacteren"] {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.status-btn.active[data-status="Gebeld"] {
+  border-color: rgba(45, 125, 210, 0.6);
+  color: var(--blue-light);
+  background: rgba(45, 125, 210, 0.1);
+}
+
+.status-btn.active[data-status="Gemaild"] {
+  border-color: rgba(45, 125, 210, 0.6);
+  color: var(--blue-light);
+  background: rgba(45, 125, 210, 0.1);
+}
+
+.status-btn.active[data-status="Geen reactie"] {
+  border-color: rgba(244, 162, 97, 0.6);
+  color: var(--amber);
+  background: rgba(244, 162, 97, 0.1);
+}
+
+.status-btn.active[data-status="Hot lead"] {
+  border-color: rgba(230, 57, 70, 0.6);
+  color: #e87070;
+  background: rgba(230, 57, 70, 0.1);
+}
+
+.status-btn.active[data-status="Afgerond"] {
+  border-color: rgba(29, 185, 84, 0.6);
+  color: var(--go);
+  background: rgba(29, 185, 84, 0.1);
+}
+
+/* Opslaan-indicator onder notities textarea */
+.saving-indicator {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+  min-height: 16px;
+}
+
+.saving-indicator.active { color: var(--amber); }
+.saving-indicator.saved  { color: var(--go); }
+
+
+/* ============================================================
+   14. TABELLEN (analytics dashboard)
+   ============================================================ */
+
+.sales-table-wrap {
+  overflow-x: auto;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.sales-table th {
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sales-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.sales-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.sales-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.person-name { font-weight: 500; color: var(--text); }
+.person-sub  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+
+/* ============================================================
+   15. PIPELINE WAARDE SECTIE
+   ============================================================ */
+
+.pipeline-total-box {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 20px 24px 18px;
+}
+
+.pipeline-total-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.pipeline-total-value {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 40px;
+  color: var(--go);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.pipeline-total-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+
+/* ============================================================
+   16. ACTIES RIJ (knoppen onderaan kaart)
+   ============================================================ */
+
+.actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+
+/* ============================================================
+   17. LADEN, LEGE STAAT & SPINNER
+   ============================================================ */
+
+.loading-state,
+.empty-state {
+  width: 100%;
+  max-width: 700px;
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Analytics loading-state (gecentreerd op volledige viewport) */
+.loading-state--full {
+  min-height: 55vh;
+  justify-content: center;
+}
+
+.empty-state span {
+  font-size: 40px;
+  margin-bottom: 4px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--surface2);
+  border-top-color: var(--blue-light);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ============================================================
+   18. TOAST NOTIFICATIE
+   ============================================================ */
+
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--text);
+  z-index: 999;
+  transition: transform 0.3s ease;
+  white-space: nowrap;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ============================================================
+   19. DIVIDER
+   ============================================================ */
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+
+/* ============================================================
+   20. LIJST CONTAINER (vacatures / leads)
+   ============================================================ */
+
+.list {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+/* ============================================================
+   21. RESPONSIVE — DASHBOARD GRID
+   ============================================================ */
+
+.dashboard {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 4px 16px 60px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .dashboard {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card-full {
+    grid-column: 1 / -1;
+  }
+}

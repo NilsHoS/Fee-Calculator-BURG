@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a18">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BURG Plaatsing">
+  <link rel="manifest" href="/BURG-Apps/manifest.json">
+  <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+  <title>Provisie Calculator W&S Plaatsing</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* Aanbetaling knoppen */
+    .aanbetaling-btn {
+      padding: 6px 14px; border-radius: 6px; border: 1.5px solid #d0cfc9;
+      background: #fff; font-size: 13px; cursor: pointer; color: #3a3a36;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .aanbetaling-btn.selected {
+      background: #2d7a3a; border-color: #2d7a3a; color: #fff; font-weight: 600;
+    }
+    .aanbetaling-btn:hover:not(.selected) { border-color: #2d7a3a; color: #2d7a3a; }
+
+    /* Persoon invoerblokken */
+    .person-block {
+      border: 0.5px solid rgba(0,0,0,0.10); border-radius: 10px;
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .person-name-row { display: flex; align-items: center; gap: 10px; }
+    .person-name-row .text-input-wrap { flex: 1; }
+    .onboarding-row { display: flex; align-items: center; gap: 10px; }
+    .onboarding-label { font-size: 12px; color: #73726c; flex: 1; }
+
+    /* Resultatenweergave */
+    .results { display: flex; flex-direction: column; gap: 8px; margin-top: 1.25rem; }
+
+    .result-row {
+      background: #f5f4f0; border-radius: 8px; padding: 12px 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .result-row.head-row { background: #fff; border: 0.5px solid rgba(0,0,0,0.10); }
+    .result-left { display: flex; flex-direction: column; gap: 2px; }
+    .result-name { font-size: 14px; font-weight: 500; color: #1a1a18; }
+    .result-sub { font-size: 12px; color: #73726c; }
+    .result-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .result-pct { font-size: 16px; font-weight: 500; color: #1a1a18; }
+    .result-amount { font-size: 12px; color: #73726c; }
+    .result-restant { font-size: 12px; color: #3b6d11; font-weight: 500; }
+
+    /* Onboarding badge */
+    .badge-onboarding {
+      display: inline-block; font-size: 10px; background: #faeeda; color: #854f0b;
+      padding: 2px 7px; border-radius: 6px; margin-left: 5px; vertical-align: middle; font-weight: 400;
+    }
+
+    /* Totaalsectie */
+    .totaal-block {
+      border-top: 0.5px solid rgba(0,0,0,0.10); margin-top: 4px; padding-top: 10px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .totaal-row-item { display: flex; justify-content: space-between; font-size: 13px; }
+    .totaal-row-item span { color: #73726c; }
+    .totaal-row-item strong { color: #1a1a18; }
+
+    /* Lege toestand */
+    .idle-state { background: #f5f4f0; border-radius: 8px; padding: 14px; font-size: 14px; color: #73726c; text-align: center; }
+
+    /* Dark mode — pagina-specifieke klassen */
+    @media (prefers-color-scheme: dark) {
+      .person-block { border-color: rgba(255,255,255,0.08); }
+      .onboarding-label { color: #888780; }
+      .result-row { background: #333330; }
+      .result-row.head-row { background: #2a2a28; border-color: rgba(255,255,255,0.08); }
+      .result-name { color: #e0dfd8; }
+      .result-sub { color: #888780; }
+      .result-pct { color: #e0dfd8; }
+      .result-amount { color: #888780; }
+      .result-restant { color: #97c459; }
+      .badge-onboarding { background: #633806; color: #fac775; }
+      .totaal-block { border-color: rgba(255,255,255,0.08); }
+      .totaal-row-item span { color: #888780; }
+      .totaal-row-item strong { color: #e0dfd8; }
+      .idle-state { background: #333330; color: #888780; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <a href="/BURG-Apps/" class="back">‹ Terug</a>
+    <h1>Provisie Calculator W&S Plaatsing</h1>
+
+    <div class="required-banner" id="banner">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7" stroke="#854f0b" stroke-width="1.5"/>
+        <path d="M8 5V8.5" stroke="#854f0b" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="8" cy="11" r="0.75" fill="#854f0b"/>
+      </svg>
+      Vul dealwaarde én alle namen in om de verdeling te berekenen
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Dealwaarde</div>
+        <div class="metric-value" id="out-deal">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Aanbetaling</div>
+        <div class="metric-value" id="out-aanbetaling">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Al voldaan</div>
+        <div class="metric-value" id="out-al">—</div>
+      </div>
+      <div class="metric accent">
+        <div class="metric-label">Nog te betalen</div>
+        <div class="metric-value" id="out-restant">—</div>
+      </div>
+    </div>
+
+    <div class="layout-cols">
+      <div>
+        <div class="section-title">Plaatsing</div>
+        <div class="controls">
+
+          <div class="control-row">
+            <span class="control-label">
+              <span class="required-dot" id="dot-deal"></span>
+              Dealwaarde (excl. BTW)
+            </span>
+            <div class="text-input-wrap needs-input" id="wrap-deal">
+              <span class="input-prefix">€</span>
+              <input type="text" id="inp-deal" placeholder="bijv. 15.000" inputmode="decimal" oninput="calc()">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <span class="control-label">Aanbetaling</span>
+            <div class="toggle-wrap">
+              <label class="toggle">
+                <input type="checkbox" id="tog-aanbetaling" onchange="toggleAanbetaling()">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+              <span class="toggle-val" id="lbl-aanbetaling">Nee &mdash; &euro;&nbsp;0</span>
+            </div>
+          </div>
+          <div id="aanbetaling-opties" style="display:none; margin-top:8px; display:none;">
+            <div style="display:flex; gap:8px;">
+              <button class="aanbetaling-btn" data-value="2500" onclick="selectAanbetaling(2500)">&euro; 2.500</button>
+              <button class="aanbetaling-btn selected" data-value="5000" onclick="selectAanbetaling(5000)">&euro; 5.000</button>
+              <button class="aanbetaling-btn" data-value="10000" onclick="selectAanbetaling(10000)">&euro; 10.000</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="section-title"><span class="required-dot" id="dot-sales"></span>Sales officer</div>
+        <div class="person-block">
+          <div class="person-name-row">
+            <div class="text-input-wrap needs-input" id="wrap-sales">
+              <input type="text" id="naam-sales" placeholder="Naam" oninput="calc()">
+            </div>
+          </div>
+          <div class="onboarding-row">
+            <label class="toggle">
+              <input type="checkbox" id="ob-sales" onchange="calc()">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+            <span class="onboarding-label">In onboarding → 20% naar Head of Sales</span>
+          </div>
+        </div>
+
+      </div>
+      <div>
+
+        <div class="section-title"><span class="required-dot" id="dot-rec"></span>Recruiter</div>
+        <div class="person-block">
+          <div class="person-name-row">
+            <div class="text-input-wrap needs-input" id="wrap-rec">
+              <input type="text" id="naam-rec" placeholder="Naam" oninput="calc()">
+            </div>
+          </div>
+          <div class="onboarding-row">
+            <label class="toggle">
+              <input type="checkbox" id="ob-rec" onchange="calc()">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+            <span class="onboarding-label">In onboarding → 20% naar Head of Recruitment</span>
+          </div>
+        </div>
+
+        <div class="section-title"><span class="required-dot" id="dot-con"></span>Consultant</div>
+        <div class="person-block">
+          <div class="person-name-row">
+            <div class="text-input-wrap needs-input" id="wrap-con">
+              <input type="text" id="naam-con" placeholder="Naam" oninput="calc()">
+            </div>
+          </div>
+          <div class="onboarding-row">
+            <label class="toggle">
+              <input type="checkbox" id="ob-con" onchange="calc()">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+            <span class="onboarding-label">In onboarding → 20% naar Head of Recruitment</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider" style="margin-top: 1.25rem;"></div>
+    <div id="results-wrap">
+      <div class="idle-state">Vul een dealwaarde in om de verdeling te berekenen</div>
+    </div>
+
+  </div>
+
+  <script>
+    function fmt(n) {
+      return '€ ' + Math.round(n).toLocaleString('nl-NL');
+    }
+    function fmtPct(n) {
+      return (Math.round(n * 10) / 10).toLocaleString('nl-NL') + '%';
+    }
+
+    let geselecteerdeAanbetaling = 5000;
+
+    function toggleAanbetaling() {
+      const aan = document.getElementById('tog-aanbetaling').checked;
+      const opties = document.getElementById('aanbetaling-opties');
+      opties.style.display = aan ? 'block' : 'none';
+      if (aan) selectAanbetaling(geselecteerdeAanbetaling);
+      else calc();
+    }
+
+    function selectAanbetaling(bedrag) {
+      geselecteerdeAanbetaling = bedrag;
+      document.querySelectorAll('.aanbetaling-btn').forEach(btn => {
+        btn.classList.toggle('selected', parseInt(btn.dataset.value) === bedrag);
+      });
+      calc();
+    }
+
+    function parseDutch(str) {
+      return parseFloat((str || '').replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    function calc() {
+      const deal = parseDutch(document.getElementById('inp-deal').value);
+      const heeftAanbetaling = document.getElementById('tog-aanbetaling').checked;
+      const aanbetaling = heeftAanbetaling ? geselecteerdeAanbetaling : 0;
+
+      const salesNaam = document.getElementById('naam-sales').value || 'Sales officer';
+      const recNaam   = document.getElementById('naam-rec').value   || 'Recruiter';
+      const conNaam   = document.getElementById('naam-con').value   || 'Consultant';
+      const obSales   = document.getElementById('ob-sales').checked;
+      const obRec     = document.getElementById('ob-rec').checked;
+      const obCon     = document.getElementById('ob-con').checked;
+
+      const bedragLabel = heeftAanbetaling ? geselecteerdeAanbetaling.toLocaleString('nl-NL') : '0';
+      document.getElementById('lbl-aanbetaling').textContent = heeftAanbetaling ? `Ja — € ${bedragLabel}` : 'Nee — € 0';
+
+      const wrap = document.getElementById('wrap-deal');
+      wrap.className = deal > 0 ? 'text-input-wrap has-input' : 'text-input-wrap needs-input';
+      document.getElementById('dot-deal').className = deal > 0 ? 'required-dot filled' : 'required-dot';
+
+      const nameFields = [
+        { wrap: 'wrap-sales', dot: 'dot-sales', val: document.getElementById('naam-sales').value },
+        { wrap: 'wrap-rec',   dot: 'dot-rec',   val: document.getElementById('naam-rec').value },
+        { wrap: 'wrap-con',   dot: 'dot-con',   val: document.getElementById('naam-con').value },
+      ];
+      nameFields.forEach(f => {
+        const filled = f.val.trim().length > 0;
+        document.getElementById(f.wrap).className = filled ? 'text-input-wrap has-input' : 'text-input-wrap needs-input';
+        document.getElementById(f.dot).className  = filled ? 'required-dot filled' : 'required-dot';
+      });
+
+      const allFilled = deal > 0 && nameFields.every(f => f.val.trim().length > 0);
+      document.getElementById('banner').classList.toggle('hidden', allFilled);
+
+      if (deal <= 0) {
+        document.getElementById('out-deal').textContent      = '—';
+        document.getElementById('out-aanbetaling').textContent = '—';
+        document.getElementById('out-al').textContent        = '—';
+        document.getElementById('out-restant').textContent   = '—';
+        document.getElementById('results-wrap').innerHTML    = '<div class="idle-state">Vul een dealwaarde in om de verdeling te berekenen</div>';
+        return;
+      }
+
+      // Bruto aandelen
+      const salesBruto = deal * 0.30;
+      const recBruto   = deal * 0.30;
+      const conBruto   = deal * 0.40;
+
+      // Onboarding afdrachten
+      const salesAfdracht = obSales ? salesBruto * 0.20 : 0;
+      const recAfdracht   = obRec   ? recBruto   * 0.20 : 0;
+      const conAfdracht   = obCon   ? conBruto   * 0.20 : 0;
+
+      // Netto per persoon
+      const salesNetto = salesBruto - salesAfdracht;
+      const recNetto   = recBruto   - recAfdracht;
+      const conNetto   = conBruto   - conAfdracht;
+
+      // Aanbetaling verdeling
+      const salesAl = aanbetaling > 0 ? aanbetaling * 0.50 : 0;
+      const conAl   = aanbetaling > 0 ? aanbetaling * 0.50 : 0;
+      const recAl   = 0;
+
+      // Nog te ontvangen
+      const salesRestant = salesNetto - salesAl;
+      const recRestant   = recNetto   - recAl;
+      const conRestant   = conNetto   - conAl;
+
+      // Head of
+      const headSalesBedrag = salesAfdracht;
+      const headRecBedrag   = recAfdracht + conAfdracht;
+
+      const totaalRestant = salesRestant + recRestant + conRestant + headSalesBedrag + headRecBedrag;
+
+      // Basis voor percentage: restant bij aanbetaling, totaal zonder
+      const pctBasis = aanbetaling > 0 ? totaalRestant : deal;
+
+      // Update metrics
+      document.getElementById('out-deal').textContent        = fmt(deal);
+      document.getElementById('out-aanbetaling').textContent = aanbetaling > 0 ? fmt(aanbetaling) : '—';
+      document.getElementById('out-al').textContent          = aanbetaling > 0 ? fmt(aanbetaling) : fmt(0);
+      document.getElementById('out-restant').textContent     = fmt(totaalRestant);
+
+      // Build results
+      function row(naam, rol, netto, al, restant, onboarding, afdrachtLabel) {
+        const heeftAl = aanbetaling > 0 && al > 0;
+        const subParts = [];
+        if (onboarding) subParts.push(afdrachtLabel);
+        if (heeftAl) subParts.push('al ontvangen: ' + fmt(al));
+        const pct = fmtPct((restant / pctBasis) * 100);
+        return `
+        <div class="result-row">
+          <div class="result-left">
+            <div class="result-name">${naam}${onboarding ? '<span class="badge-onboarding">onboarding</span>' : ''}</div>
+            <div class="result-sub">${rol}${subParts.length ? ' &middot; ' + subParts.join(' &middot; ') : ''}</div>
+          </div>
+          <div class="result-right">
+            <div class="result-pct">${pct}</div>
+            <div class="result-amount">${fmt(netto)} totaal</div>
+            <div class="result-restant">+ ${fmt(restant)} te ontvangen</div>
+          </div>
+        </div>`;
+      }
+
+      function headRow(naam, bedrag, omschrijving) {
+        return `
+        <div class="result-row head-row">
+          <div class="result-left">
+            <div class="result-name">${naam}</div>
+            <div class="result-sub">${omschrijving}</div>
+          </div>
+          <div class="result-right">
+            <div class="result-pct">${fmtPct((bedrag / pctBasis) * 100)}</div>
+            <div class="result-restant">+ ${fmt(bedrag)} te ontvangen</div>
+          </div>
+        </div>`;
+      }
+
+      let html = '<div class="results">';
+      html += row(salesNaam, 'Sales officer', salesNetto, salesAl, salesRestant, obSales, '20% → Head of Sales');
+      html += row(recNaam,   'Recruiter',     recNetto,   recAl,   recRestant,   obRec,   '20% → Head of Recruitment');
+      html += row(conNaam,   'Consultant',    conNetto,   conAl,   conRestant,   obCon,   '20% → Head of Recruitment');
+
+      if (headSalesBedrag > 0) {
+        html += headRow('Head of Sales', headSalesBedrag, 'Onboarding afdracht van ' + salesNaam);
+      }
+      if (headRecBedrag > 0) {
+        const parts = [];
+        if (recAfdracht > 0) parts.push(recNaam);
+        if (conAfdracht > 0) parts.push(conNaam);
+        html += headRow('Head of Recruitment', headRecBedrag, 'Onboarding afdracht van ' + parts.join(' & '));
+      }
+
+      html += `<div class="totaal-block">`;
+      if (aanbetaling > 0) {
+        html += `<div class="totaal-row-item"><span>Aanbetaling (al voldaan)</span><strong>${fmt(aanbetaling)}</strong></div>`;
+      }
+      html += `<div class="totaal-row-item"><span>Nog te betalen</span><strong>${fmt(totaalRestant)}</strong></div>`;
+      html += `<div class="totaal-row-item"><span>Dealwaarde totaal</span><strong>${fmt(deal)}</strong></div>`;
+      html += `</div>`;
+      html += '</div>';
+
+      document.getElementById('results-wrap').innerHTML = html;
+    }
+
+    calc();
+  </script>
+</body>
+</html>

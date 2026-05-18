@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a18">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BURG Tools">
+  <link rel="manifest" href="/BURG-Apps/manifest.json">
+  <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+  <title>BURG — Tools & Apps</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* Index-specifieke body layout (overschrijft styles.css body voor deze pagina) */
+    body {
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 2rem 1rem;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 12px rgba(65,105,160,0.18);
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 0.25rem; text-align: center; }
+    .subtitle { font-size: 14px; color: #73726c; margin-bottom: 2.5rem; text-align: center; }
+
+    /* Ontbrekende tool-icon kleurvarianten (niet in styles.css) */
+    .tool-icon.pip { background: #1a3a5c; }
+    .tool-icon.sal { background: #0f2d1a; }
+    .tool-icon.das { background: #0d1a2e; }
+    .tool-icon.ver { background: #5a3e8a; }
+    .tool-icon.pro { background: #7a4a1e; }
+
+    @media (prefers-color-scheme: dark) {
+      h1 { color: #e0dfd8; }
+      .subtitle { color: #5f5e5a; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <img src="/BURG-Apps/icon-512.png" alt="BURG logo">
+  </div>
+
+  <h1>BURG Tools & Apps</h1>
+  <p class="subtitle">Kies een tool</p>
+
+  <div class="tools">
+
+    <a href="/BURG-Apps/calculator.html" class="tool-card">
+      <div class="tool-icon">
+        <img src="/BURG-Apps/img-fee-checker.png" alt="Fee Checker">
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Fee Checker</div>
+        <div class="tool-desc">Schat de fee in vóór een gesprek</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/jobpull.html" class="tool-card">
+      <div class="tool-icon">
+        <img src="/BURG-Apps/img-jobpull.png" alt="Sales Overdracht">
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Sales Overdracht</div>
+        <div class="tool-desc">Draag een vacature over aan consultants</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/plaatsing.html" class="tool-card">
+      <div class="tool-icon">
+        <img src="/BURG-Apps/img-honorarium.png" alt="Definitief Honorarium">
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Definitief Honorarium</div>
+        <div class="tool-desc">Bereken het honorarium bij plaatsing</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/pipeline.html" class="tool-card">
+      <div class="tool-icon pip">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <rect x="3" y="5" width="20" height="3" rx="1.5" fill="white"/>
+          <rect x="3" y="11.5" width="14" height="3" rx="1.5" fill="white"/>
+          <rect x="3" y="18" width="9" height="3" rx="1.5" fill="white"/>
+          <circle cx="21" cy="19.5" r="3.5" fill="#2d7dd2"/>
+          <path d="M19.5 19.5L21 21L23 18.5" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Pipeline</div>
+        <div class="tool-desc">Beheer goedgekeurde vacatures en wijs toe aan recruiters</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/sales.html" class="tool-card">
+      <div class="tool-icon sal">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="margin:auto;display:block;">
+          <rect x="3" y="17" width="4" height="6" rx="1.2" fill="#1db954"/>
+          <rect x="9" y="13" width="4" height="10" rx="1.2" fill="#1db954" opacity="0.75"/>
+          <rect x="15" y="9" width="4" height="14" rx="1.2" fill="#1db954" opacity="0.55"/>
+          <rect x="21" y="5" width="4" height="18" rx="1.2" fill="#1db954" opacity="0.35"/>
+          <path d="M4 16L10 12L16 8L22 4" stroke="#1db954" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="4" cy="16" r="1.5" fill="#1db954"/>
+          <circle cx="10" cy="12" r="1.5" fill="#1db954"/>
+          <circle cx="16" cy="8" r="1.5" fill="#1db954"/>
+          <circle cx="22" cy="4" r="1.5" fill="#1db954"/>
+        </svg>
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Sales Dashboard</div>
+        <div class="tool-desc">Volg je leads op en beheer de sales status per vacature</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/dashboard.html" class="tool-card">
+      <div class="tool-icon das">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="margin:auto;display:block;">
+          <rect x="3" y="3" width="9" height="9" rx="2" fill="#2d7dd2" opacity="0.9"/>
+          <rect x="14" y="3" width="9" height="5" rx="2" fill="#2d7dd2" opacity="0.5"/>
+          <rect x="14" y="10" width="9" height="2" rx="1" fill="#2d7dd2" opacity="0.3"/>
+          <rect x="3" y="14" width="5" height="9" rx="2" fill="#1db954" opacity="0.8"/>
+          <rect x="10" y="17" width="5" height="6" rx="2" fill="#1db954" opacity="0.6"/>
+          <rect x="17" y="14" width="6" height="9" rx="2" fill="#f4a261" opacity="0.75"/>
+        </svg>
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Dashboard</div>
+        <div class="tool-desc">Overzicht van vacatures, sales en conversie</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/plaatsing-verdeling.html" class="tool-card">
+      <div class="tool-icon">
+        <img src="/BURG-Apps/img-verdeling.png" alt="Verdeling Plaatsing">
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Verdeling Plaatsing</div>
+        <div class="tool-desc">Verdeel de opbrengst na plaatsing</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+    <a href="/BURG-Apps/proeftijd.html" class="tool-card">
+      <div class="tool-icon">
+        <img src="/BURG-Apps/img-proeftijd.png" alt="Proeftijd Tracker">
+      </div>
+      <div class="tool-text">
+        <div class="tool-name">Proeftijd Tracker</div>
+        <div class="tool-desc">Volg de proeftijd van nieuwe kandidaten</div>
+      </div>
+      <span class="tool-arrow">›</span>
+    </a>
+
+  </div>
+
+  <p class="version">BURG QHSSE &middot; 2026</p>
+
+</body>
+</html>

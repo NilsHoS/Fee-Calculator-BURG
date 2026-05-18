@@ -1,0 +1,808 @@
+/* =============================================================================
+   BURG QHSSE — Gedeeld Design Systeem
+   Versie: 1.0 — 2026
+   Gebruik: <link rel="stylesheet" href="./styles.css">
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. RESET
+   ============================================================================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =============================================================================
+   2. BODY BASIS
+   ============================================================================= */
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f4f0;
+  color: #1a1a18;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+
+/* =============================================================================
+   3. CARD
+   ============================================================================= */
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 560px;
+}
+
+
+/* =============================================================================
+   4. NAVIGATIE — TERUG KNOP
+   ============================================================================= */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #73726c;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.back:hover { color: #1a1a18; }
+
+
+/* =============================================================================
+   5. TYPOGRAFIE
+   ============================================================================= */
+
+h1 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  color: #1a1a18;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #b4b2a9;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 1.25rem 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.version {
+  font-size: 11px;
+  color: #b4b2a9;
+  margin-top: 2rem;
+}
+
+
+/* =============================================================================
+   6. METRICS
+   ============================================================================= */
+
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.metric {
+  background: #f5f4f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.metric.accent { background: #1a1a18; }
+
+.metric-label {
+  font-size: 12px;
+  color: #73726c;
+  margin-bottom: 3px;
+}
+.metric.accent .metric-label { color: #888780; }
+
+.metric-value {
+  font-size: 19px;
+  font-weight: 500;
+  color: #1a1a18;
+}
+.metric.accent .metric-value { color: #f5f4f0; font-size: 22px; }
+
+
+/* =============================================================================
+   7. CONTROLS EN RIJEN
+   ============================================================================= */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+
+.control-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-label {
+  font-size: 12px;
+  color: #73726c;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.control-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+/* =============================================================================
+   8. RANGE SLIDER
+   ============================================================================= */
+
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #d3d1c7;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1a1a18;
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1a1a18;
+  cursor: pointer;
+  border: none;
+}
+
+.slider-val {
+  font-size: 13px;
+  color: #73726c;
+  min-width: 52px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+
+/* =============================================================================
+   9. KNOPPENGROEP (btn-group)
+   ============================================================================= */
+
+.btn-group { display: flex; gap: 6px; }
+
+.btn-group button {
+  flex: 1;
+  padding: 9px 4px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+  background: transparent;
+  color: #73726c;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-group button:hover {
+  border-color: rgba(0,0,0,0.4);
+  color: #1a1a18;
+}
+.btn-group button.active {
+  background: #1a1a18;
+  color: #f5f4f0;
+  border-color: #1a1a18;
+}
+
+
+/* =============================================================================
+   10. TOGGLE SCHAKELAAR
+   ============================================================================= */
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: #d3d1c7;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle input:checked + .toggle-track { background: #1a1a18; }
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: transform 0.2s;
+}
+.toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+.toggle-val {
+  font-size: 13px;
+  color: #73726c;
+}
+
+
+/* =============================================================================
+   11. TEKSTVELD WRAPPER (text-input-wrap)
+   ============================================================================= */
+
+.text-input-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  border: 1.5px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+.text-input-wrap.needs-input { border-color: #ef9f27; }
+.text-input-wrap.has-input   { border-color: #3b6d11; }
+
+.input-prefix {
+  padding: 10px;
+  font-size: 14px;
+  color: #73726c;
+  background: #f5f4f0;
+  border-right: 1px solid rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.input-suffix {
+  padding: 10px;
+  font-size: 14px;
+  color: #73726c;
+  background: #f5f4f0;
+  border-left: 1px solid rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.text-input-wrap input[type="number"],
+.text-input-wrap input[type="text"] {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a18;
+  background: transparent;
+  -moz-appearance: textfield;
+  width: 100%;
+}
+.text-input-wrap input[type="number"]::-webkit-outer-spin-button,
+.text-input-wrap input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+
+/* =============================================================================
+   12. VERPLICHT INDICATOR
+   ============================================================================= */
+
+.required-dot {
+  width: 6px;
+  height: 6px;
+  background: #ef9f27;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.required-dot.filled { background: #3b6d11; }
+
+.required-banner {
+  background: #faeeda;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #854f0b;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.required-banner.hidden { display: none; }
+
+
+/* =============================================================================
+   13. VERDICT (go / nogo / idle)
+   ============================================================================= */
+
+.verdict {
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.verdict.go   { background: #eaf3de; color: #3b6d11; }
+.verdict.nogo { background: #fcebeb; color: #a32d2d; }
+.verdict.idle { background: #f5f4f0; color: #73726c; }
+
+
+/* =============================================================================
+   14. DREMPEL NOOT
+   ============================================================================= */
+
+.drempel-note {
+  font-size: 12px;
+  color: #888780;
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+
+/* =============================================================================
+   15. DIVIDER
+   ============================================================================= */
+
+.divider {
+  border: none;
+  border-top: 0.5px solid rgba(0,0,0,0.08);
+  margin: 0.25rem 0;
+}
+
+
+/* =============================================================================
+   16. TWEE KOLOMMEN LAYOUT
+   ============================================================================= */
+
+/* Mobiel: enkel kolom (geen stijl nodig, standaard block flow) */
+/* Desktop variant staat in het @media blok onderaan */
+
+
+/* =============================================================================
+   17. INDEX — TOOLS GRID
+   ============================================================================= */
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.tool-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.1s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tool-card:hover { border-color: rgba(65,105,160,0.4); }
+.tool-card:active { transform: scale(0.98); }
+
+.tool-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Tool icon kleurvarianten */
+.tool-icon.fee { background: #4169a0; }
+.tool-icon.hon { background: #1a1a18; }
+.tool-icon.pla { background: #2d6a4f; }
+.tool-icon.job { background: #8b4513; }
+
+.tool-text { flex: 1; }
+.tool-name { font-size: 15px; font-weight: 500; color: #1a1a18; margin-bottom: 2px; }
+.tool-desc { font-size: 13px; color: #73726c; line-height: 1.4; }
+.tool-arrow { font-size: 20px; color: #b4b2a9; flex-shrink: 0; }
+
+
+/* =============================================================================
+   18. JOBPULL — SECTIEKAART
+   ============================================================================= */
+
+.section-card {
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  border-radius: 16px;
+  padding: 1.75rem;
+  margin-bottom: 16px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b4b2a9;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 1.25rem;
+}
+
+
+/* =============================================================================
+   19. JOBPULL — GRID LAYOUTS
+   ============================================================================= */
+
+/* Mobiel: altijd single column */
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+/* Desktop: meerdere kolommen */
+@media (min-width: 640px) {
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+
+/* =============================================================================
+   20. JOBPULL — FORMULIERVELDEN
+   ============================================================================= */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #73726c;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  border: 1.5px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a1a18;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+input:focus, textarea:focus, select:focus { border-color: #1a1a18; }
+input.filled, textarea.filled, select.filled { border-color: #3b6d11; }
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2373726c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+
+/* =============================================================================
+   21. JOBPULL — TOGGLE KNOPPEN (btn-toggle-group)
+   ============================================================================= */
+
+.btn-toggle-group { display: flex; gap: 8px; }
+
+.btn-toggle {
+  flex: 1;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1.5px solid rgba(0,0,0,0.15);
+  background: transparent;
+  color: #73726c;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.btn-toggle:hover { border-color: rgba(0,0,0,0.35); color: #1a1a18; }
+.btn-toggle.active       { background: #1a1a18; color: #f5f4f0; border-color: #1a1a18; }
+.btn-toggle.active-green { background: #3b6d11; color: #fff; border-color: #3b6d11; }
+.btn-toggle.active-red   { background: #a32d2d; color: #fff; border-color: #a32d2d; }
+
+
+/* =============================================================================
+   22. JOBPULL — CONDITIONAL BLOCK
+   ============================================================================= */
+
+.conditional {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.conditional.visible { max-height: 300px; opacity: 1; }
+.conditional .grid-2 { margin-top: 16px; }
+
+
+/* =============================================================================
+   23. JOBPULL — SUBMIT
+   ============================================================================= */
+
+.submit-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+.submit-note {
+  font-size: 12px;
+  color: #73726c;
+}
+
+.btn-submit {
+  padding: 12px 32px;
+  background: #1a1a18;
+  color: #f5f4f0;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-submit:hover    { opacity: 0.85; }
+.btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+
+/* =============================================================================
+   24. JOBPULL — STATUS BANNER
+   ============================================================================= */
+
+.status-banner {
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+.status-banner.success { display: flex; background: #eaf3de; color: #3b6d11; }
+.status-banner.error   { display: flex; background: #fcebeb; color: #a32d2d; }
+.status-banner.sending { display: flex; background: #f5f4f0; color: #73726c; }
+
+
+/* =============================================================================
+   25. DESKTOP BREAKPOINT — min-width: 640px
+   ============================================================================= */
+
+@media (min-width: 640px) {
+
+  body {
+    padding: 2.5rem 1.5rem;
+    align-items: center;
+  }
+
+  .card {
+    max-width: 780px;
+    padding: 2rem;
+  }
+
+  h1 { font-size: 20px; }
+
+  .metrics { grid-template-columns: repeat(4, 1fr); }
+  .metric-value { font-size: 22px; }
+  .metric.accent .metric-value { font-size: 26px; }
+
+  .controls { gap: 18px; margin-bottom: 0; }
+
+  .layout-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* Index tools grid */
+  .tools {
+    max-width: 900px;
+    flex-direction: row;
+  }
+  .tool-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    flex: 1;
+  }
+  .tool-arrow { display: none; }
+  .tool-icon {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 0.75rem;
+  }
+  .tool-name { font-size: 16px; margin-bottom: 4px; }
+}
+
+
+/* =============================================================================
+   26. DARK MODE — prefers-color-scheme: dark
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+  /* ── Basis ── */
+  body { background: #1e1e1c; color: #e0dfd8; }
+
+  /* ── Kaart ── */
+  .card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+
+  /* ── Typografie ── */
+  h1 { color: #e0dfd8; }
+  .section-title { color: #5f5e5a; }
+  .version { color: #444441; }
+
+  /* ── Navigatie ── */
+  .back { color: #5f5e5a; }
+  .back:hover { color: #e0dfd8; }
+
+  /* ── Metrics ── */
+  .metric { background: #333330; }
+  .metric.accent { background: #e0dfd8; }
+  .metric-label { color: #888780; }
+  .metric.accent .metric-label { color: #73726c; }
+  .metric-value { color: #e0dfd8; }
+  .metric.accent .metric-value { color: #1a1a18; }
+
+  /* ── Controls ── */
+  .control-label { color: #888780; }
+
+  /* ── Slider ── */
+  input[type="range"] { background: #444441; }
+  input[type="range"]::-webkit-slider-thumb { background: #e0dfd8; }
+  input[type="range"]::-moz-range-thumb { background: #e0dfd8; }
+  .slider-val { color: #888780; }
+
+  /* ── Knoppengroep ── */
+  .btn-group button { border-color: rgba(255,255,255,0.25); color: #888780; }
+  .btn-group button:hover { border-color: rgba(255,255,255,0.5); color: #e0dfd8; }
+  .btn-group button.active { background: #e0dfd8; color: #1a1a18; border-color: #e0dfd8; }
+
+  /* ── Toggle schakelaar ── */
+  .toggle-track { background: #444441; }
+  .toggle input:checked + .toggle-track { background: #e0dfd8; }
+  .toggle-thumb { background: #2a2a28; }
+  .toggle-val { color: #888780; }
+
+  /* ── Tekstveld wrapper ── */
+  .text-input-wrap { border-color: rgba(255,255,255,0.15); background: #333330; }
+  .text-input-wrap.needs-input { border-color: #ef9f27; }
+  .text-input-wrap.has-input   { border-color: #3b6d11; }
+  .input-prefix { background: #2a2a28; border-color: rgba(255,255,255,0.1); color: #888780; }
+  .input-suffix { background: #2a2a28; border-color: rgba(255,255,255,0.1); color: #888780; }
+  .text-input-wrap input[type="number"],
+  .text-input-wrap input[type="text"] { color: #e0dfd8; background: #333330; }
+
+  /* ── Verplicht indicator ── */
+  .required-banner { background: #633806; color: #fac775; }
+
+  /* ── Verdict ── */
+  .verdict.go   { background: #27500a; color: #c0dd97; }
+  .verdict.nogo { background: #791f1f; color: #f7c1c1; }
+  .verdict.idle { background: #333330; color: #888780; }
+
+  /* ── Drempel noot ── */
+  .drempel-note { color: #5f5e5a; }
+
+  /* ── Divider ── */
+  .divider { border-color: rgba(255,255,255,0.08); }
+
+  /* ── Index tools ── */
+  .tool-card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+  .tool-card:hover { border-color: rgba(65,105,160,0.5); }
+  .tool-name { color: #e0dfd8; }
+  .tool-desc { color: #5f5e5a; }
+  .tool-icon.hon { background: #333330; }
+  .tool-arrow { color: #444441; }
+
+  /* ── Jobpull sectiekaart ── */
+  .section-card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+  .section-label { color: #5f5e5a; }
+
+  /* ── Jobpull labels ── */
+  label { color: #888780; }
+
+  /* ── Jobpull formuliervelden ── */
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  input[type="email"],
+  textarea,
+  select {
+    background: #333330;
+    border-color: rgba(255,255,255,0.15);
+    color: #e0dfd8;
+  }
+  input:focus, textarea:focus, select:focus { border-color: #e0dfd8; }
+  input.filled, textarea.filled, select.filled { border-color: #97c459; }
+
+  /* ── Jobpull toggle knoppen ── */
+  .btn-toggle { border-color: rgba(255,255,255,0.2); color: #888780; }
+  .btn-toggle:hover { border-color: rgba(255,255,255,0.4); color: #e0dfd8; }
+  .btn-toggle.active { background: #e0dfd8; color: #1a1a18; border-color: #e0dfd8; }
+
+  /* ── Jobpull submit ── */
+  .submit-note { color: #888780; }
+  .btn-submit { background: #e0dfd8; color: #1a1a18; }
+
+  /* ── Jobpull status banner ── */
+  .status-banner.success { background: #27500a; color: #c0dd97; }
+  .status-banner.error   { background: #791f1f; color: #f7c1c1; }
+  .status-banner.sending { background: #333330; color: #888780; }
+
+}
