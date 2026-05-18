@@ -40,12 +40,14 @@
     h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 0.25rem; text-align: center; }
     .subtitle { font-size: 14px; color: #73726c; margin-bottom: 2.5rem; text-align: center; }
 
+    /* Afbeeldingen in tool-icon inperken */
+    .tool-icon { overflow: hidden; background: #f0eeea; }
+    .tool-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
     /* Ontbrekende tool-icon kleurvarianten (niet in styles.css) */
     .tool-icon.pip { background: #1a3a5c; }
     .tool-icon.sal { background: #0f2d1a; }
     .tool-icon.das { background: #0d1a2e; }
-    .tool-icon.ver { background: #5a3e8a; }
-    .tool-icon.pro { background: #7a4a1e; }
 
     @media (prefers-color-scheme: dark) {
       h1 { color: #e0dfd8; }
