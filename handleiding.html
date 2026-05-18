@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Handleiding BURG Tools & Apps</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+
+    /* ── Paginalayout ── */
+    body {
+      display: block;
+      padding: 2.5rem 1rem 4rem;
+      max-width: 100%;
+    }
+
+    .page-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .hd-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .hd-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(65,105,160,0.18);
+    }
+    .hd-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hd-header-text h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a18;
+      margin-bottom: 2px;
+    }
+    .hd-header-text p {
+      font-size: 14px;
+      color: #73726c;
+    }
+
+    /* ── Intro blok ── */
+    .hd-intro {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .hd-intro p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #3a3a36;
+      margin-bottom: 0.75rem;
+    }
+    .hd-intro p:last-child { margin-bottom: 0; }
+    .hd-url-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f5f4f0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      margin-top: 0.5rem;
+    }
+    .hd-url-label {
+      font-size: 12px;
+      color: #73726c;
+      font-weight: 500;
+    }
+    .hd-url-link {
+      font-size: 14px;
+      color: #2d5fa0;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .hd-url-link:hover { text-decoration: underline; }
+
+    /* ── Overzichtstabel ── */
+    .hd-tools-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2.5rem;
+      font-size: 14px;
+    }
+    .hd-tools-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: #b4b2a9;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0 12px 8px 0;
+      border-bottom: 0.5px solid rgba(0,0,0,0.1);
+    }
+    .hd-tools-table td {
+      padding: 12px 12px 12px 0;
+      vertical-align: top;
+      border-bottom: 0.5px solid rgba(0,0,0,0.06);
+      color: #1a1a18;
+      line-height: 1.5;
+    }
+    .hd-tools-table td:last-child { color: #73726c; }
+    .hd-tool-name-cell {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* ── Sectie per tool ── */
+    .hd-section {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .hd-section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .hd-section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hd-section-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .hd-section-icon.pip { background: #1a3a5c; }
+    .hd-section-icon.sal { background: #0f2d1a; }
+    .hd-section-icon.das { background: #0d1a2e; }
+
+    .hd-section-title h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a18;
+      margin-bottom: 3px;
+    }
+    .hd-section-title p {
+      font-size: 13px;
+      color: #73726c;
+      line-height: 1.5;
+    }
+
+    /* ── Use-case banner ── */
+    .hd-usecase {
+      background: #f5f4f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #3a3a36;
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+    }
+    .hd-usecase strong {
+      color: #1a1a18;
+      font-weight: 600;
+    }
+
+    /* ── Stappenbeschrijving ── */
+    .hd-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+    .hd-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .hd-step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1a1a18;
+      color: #f5f4f0;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .hd-step-text {
+      font-size: 14px;
+      color: #3a3a36;
+      line-height: 1.55;
+    }
+    .hd-step-text strong { color: #1a1a18; font-weight: 600; }
+
+    /* ── Resultaatblok ── */
+    .hd-output {
+      background: #eaf3de;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #3b6d11;
+      line-height: 1.6;
+    }
+    .hd-output strong { font-weight: 600; }
+
+    /* ── Voorbeeld blok ── */
+    .hd-example {
+      border: 0.5px solid rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 1rem;
+      font-size: 13px;
+      color: #3a3a36;
+      line-height: 1.65;
+    }
+    .hd-example-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #b4b2a9;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    /* ── Let op banner ── */
+    .hd-warning {
+      background: #faeeda;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #854f0b;
+      line-height: 1.55;
+      margin-top: 1rem;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .hd-warning-icon { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Tippenblok ── */
+    .hd-tips {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .hd-tips h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a18;
+      margin-bottom: 1rem;
+    }
+    .hd-tip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .hd-tip {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 14px;
+      color: #3a3a36;
+      line-height: 1.55;
+    }
+    .hd-tip-dot {
+      width: 6px;
+      height: 6px;
+      background: #2d7a3a;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    /* ── Footer ── */
+    .hd-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #b4b2a9;
+      margin-top: 2.5rem;
+    }
+
+    /* ── Dark mode ── */
+    @media (prefers-color-scheme: dark) {
+      .hd-header-text h1 { color: #e0dfd8; }
+      .hd-header-text p { color: #5f5e5a; }
+      .hd-intro { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+      .hd-intro p { color: #c0bfb8; }
+      .hd-url-block { background: #333330; }
+      .hd-url-label { color: #888780; }
+      .hd-url-link { color: #7aaddd; }
+      .hd-tools-table th { color: #5f5e5a; border-color: rgba(255,255,255,0.08); }
+      .hd-tools-table td { color: #e0dfd8; border-color: rgba(255,255,255,0.06); }
+      .hd-tools-table td:last-child { color: #888780; }
+      .hd-section { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+      .hd-section-title h2 { color: #e0dfd8; }
+      .hd-section-title p { color: #888780; }
+      .hd-usecase { background: #333330; color: #c0bfb8; }
+      .hd-usecase strong { color: #e0dfd8; }
+      .hd-step-text { color: #c0bfb8; }
+      .hd-step-text strong { color: #e0dfd8; }
+      .hd-step-num { background: #e0dfd8; color: #1a1a18; }
+      .hd-output { background: #1f3a10; color: #97c459; }
+      .hd-example { border-color: rgba(255,255,255,0.08); color: #c0bfb8; }
+      .hd-example-label { color: #5f5e5a; }
+      .hd-warning { background: #633806; color: #fac775; }
+      .hd-tips { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+      .hd-tips h2 { color: #e0dfd8; }
+      .hd-tip { color: #c0bfb8; }
+      .hd-footer { color: #444441; }
+    }
+
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Header -->
+  <div class="hd-header">
+    <div class="hd-logo">
+      <img src="./icon-512.png" alt="BURG logo">
+    </div>
+    <div class="hd-header-text">
+      <h1>Handleiding BURG Tools & Apps</h1>
+      <p>Voor recruiters en sales consultants van BURG QHSSE</p>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <div class="hd-intro">
+    <p>De BURG Tools & Apps is een verzameling van acht tools die je helpen bij je dagelijkse werk als recruiter of sales consultant. Je gebruikt de app om fees in te schatten, plaatsingen te berekenen, vacatures over te dragen en kandidaten te volgen.</p>
+    <p>De app werkt in je browser en hoeft niet geïnstalleerd te worden. Op je telefoon kun je hem toevoegen aan je beginscherm via de optie "Voeg toe aan beginscherm" in Safari of Chrome.</p>
+    <div class="hd-url-block">
+      <span class="hd-url-label">Adres</span>
+      <a class="hd-url-link" href="https://nilshos.github.io/BURG-Apps/" target="_blank">nilshos.github.io/BURG-Apps</a>
+    </div>
+  </div>
+
+  <!-- Overzicht -->
+  <table class="hd-tools-table">
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>Wat doet het</th>
+        <th>Voor wie</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="hd-tool-name-cell">Fee Checker</td>
+        <td>Schat de fee in vóór een klantgesprek</td>
+        <td>Sales consultants</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Sales Overdracht</td>
+        <td>Draag een vacature per e-mail over aan een consultant</td>
+        <td>Sales consultants</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Definitief Honorarium</td>
+        <td>Bereken het exacte honorarium bij een bevestigde plaatsing</td>
+        <td>Recruiters, sales</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Verdeling Plaatsing</td>
+        <td>Verdeel de opbrengst tussen sales, recruiter en consultant</td>
+        <td>Teamleads, finance</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Proeftijd Tracker</td>
+        <td>Volg de proeftijden van geplaatste kandidaten</td>
+        <td>Recruiters</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Pipeline</td>
+        <td>Beheer goedgekeurde vacatures en wijs ze toe aan recruiters</td>
+        <td>Teamleads</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Sales Dashboard</td>
+        <td>Volg je leads op en beheer de salesstatus per vacature</td>
+        <td>Sales consultants</td>
+      </tr>
+      <tr>
+        <td class="hd-tool-name-cell">Dashboard</td>
+        <td>Overzicht van vacatures, sales en conversie</td>
+        <td>Management</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 1. FEE CHECKER -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon" style="background: #f0eeea;">
+        <img src="./img-fee-checker.png" alt="Fee Checker">
+      </div>
+      <div class="hd-section-title">
+        <h2>Fee Checker</h2>
+        <p>Snel een indicatie van de fee berekenen, vóór je met een klant aan tafel gaat</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Je gaat een gesprek in met een potentiële opdrachtgever en wilt vooraf weten of de functie aan onze minimumdrempel voldoet. De Fee Checker geeft je in enkele seconden een go of no-go.
+    </div>
+
+    <div class="hd-steps">
+      <div class="hd-step">
+        <div class="hd-step-num">1</div>
+        <div class="hd-step-text">Open de app en kies <strong>Fee Checker</strong>.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">2</div>
+        <div class="hd-step-text">Schuif de <strong>Maandsalaris</strong>-slider naar het verwachte bruto maandsalaris van de functie. De berekening past direct aan.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">3</div>
+        <div class="hd-step-text">Kies het aantal <strong>periodes</strong> (12, 13 of 14 maanden). Weet je het niet? Gebruik 12 als standaard.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">4</div>
+        <div class="hd-step-text">Pas <strong>vakantiegeld</strong> aan als de opdrachtgever minder dan 8% betaalt. Zet de slider op 0% als er geen vakantiegeld is.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">5</div>
+        <div class="hd-step-text">Zet de <strong>Leaseauto</strong>-schakelaar aan als de functie een leaseauto omvat. De app voegt automatisch €&nbsp;6.000 toe aan het jaarsalaris.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">6</div>
+        <div class="hd-step-text">Stel een eventuele <strong>bonus</strong> in (0–10%, berekend over het basissalaris, exclusief vakantiegeld).</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">7</div>
+        <div class="hd-step-text">Selecteer het van toepassing zijnde <strong>fee percentage</strong> (21–26%) via de knoppen.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">8</div>
+        <div class="hd-step-text">Lees het resultaat bovenaan af: bruto jaarsalaris, fee en het groene <strong>Go</strong>- of rode <strong>No-go</strong>-verdict.</div>
+      </div>
+    </div>
+
+    <div class="hd-output">
+      <strong>Wat krijg je terug?</strong><br>
+      Maandsalaris · Bruto jaarsalaris · Fee in euro's · Fee percentage · Go/No-go verdict<br>
+      Minimumdrempel: de fee moet boven de €&nbsp;13.500 uitkomen voor een go.
+    </div>
+
+    <div class="hd-example">
+      <div class="hd-example-label">Voorbeeld</div>
+      Maandsalaris €&nbsp;5.000 · 13 periodes · 8% vakantiegeld · geen lease · geen bonus · 22% fee<br>
+      Bruto jaarsalaris = €&nbsp;5.000 × 13 × 1,08 = €&nbsp;70.200<br>
+      Fee = €&nbsp;70.200 × 22% = €&nbsp;15.444 → <strong>Go</strong>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 2. SALES OVERDRACHT -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon" style="background: #f0eeea;">
+        <img src="./img-jobpull.png" alt="Sales Overdracht">
+      </div>
+      <div class="hd-section-title">
+        <h2>Sales Overdracht</h2>
+        <p>Vul alle informatie over de vacature in en stuur die direct door naar de consultant(s)</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Je hebt een vacature binnengehaald en je wil de consultant die de opdracht oppakt volledig informeren — inclusief gesprekspartners, afspraakinformatie en de context van de rol.
+    </div>
+
+    <div class="hd-steps">
+      <div class="hd-step">
+        <div class="hd-step-num">1</div>
+        <div class="hd-step-text">Open de app en kies <strong>Sales Overdracht</strong>.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">2</div>
+        <div class="hd-step-text">Vul bij <strong>Betrokkenen</strong> je eigen naam in, de bedrijfsnaam van de opdrachtgever, de functietitel van de vacature en de geschatte senioriteit (Onboarding / Medior / Senior).</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">3</div>
+        <div class="hd-step-text">Voer bij <strong>Gesprekspartners</strong> de naam en functie in van de contactpersoon bij de opdrachtgever (bijv. "Lisa de Boer — HR Manager"). Een tweede contactpersoon is optioneel.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">4</div>
+        <div class="hd-step-text">Kies bij <strong>Afspraak</strong> de datum, stel de tijd in via de rollendrumpicker en selecteer het type afspraak (Teams of op locatie). Bij op locatie verschijnen extra velden voor het adres en de autoreservering.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">5</div>
+        <div class="hd-step-text">Vul bij <strong>Info over de job</strong> de functiebeschrijving in, hoe lang er al gezocht wordt, of er andere bureaus betrokken zijn, of er al kandidaten in proces zijn en de salarisindicatie.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">6</div>
+        <div class="hd-step-text">Kies bij <strong>Voorwaarden aanwezig?</strong> of er al een overeenkomst is. Als je "Ja" kiest, verschijnen velden voor het fee percentage en de exclusiviteit.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">7</div>
+        <div class="hd-step-text">Klik op <strong>Overdracht versturen</strong>. De consultant(s) ontvangen direct een e-mail met alle informatie.</div>
+      </div>
+    </div>
+
+    <div class="hd-output">
+      <strong>Wat gebeurt er?</strong><br>
+      Alle ingevulde gegevens worden verstuurd als een gestructureerde e-mail naar de ingestelde ontvangers. Je ziet een groen bevestigingsbericht als het gelukt is.
+    </div>
+
+    <div class="hd-warning">
+      <svg class="hd-warning-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7" stroke="#854f0b" stroke-width="1.5"/>
+        <path d="M8 5V8.5" stroke="#854f0b" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="8" cy="11" r="0.75" fill="#854f0b"/>
+      </svg>
+      <span>De oranje stipjes naast een veldnaam geven aan dat dit veld verplicht is. De verzendknop werkt pas als alle verplichte velden zijn ingevuld.</span>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 3. DEFINITIEF HONORARIUM -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon" style="background: #f0eeea;">
+        <img src="./img-honorarium.png" alt="Definitief Honorarium">
+      </div>
+      <div class="hd-section-title">
+        <h2>Definitief Honorarium</h2>
+        <p>Het exacte honorarium berekenen op het moment dat een plaatsing bevestigd is</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Een kandidaat heeft het aanbod geaccepteerd. Je weet nu het exacte maandsalaris en het overeengekomen fee percentage. Met deze tool bereken je het definitieve honorarium dat je factureert.
+    </div>
+
+    <div class="hd-steps">
+      <div class="hd-step">
+        <div class="hd-step-num">1</div>
+        <div class="hd-step-text">Open de app en kies <strong>Definitief Honorarium</strong>.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">2</div>
+        <div class="hd-step-text">Typ het <strong>bruto maandsalaris</strong> in het oranje veld. Gebruik een punt als duizendtalen-separator en een komma als decimaalteken, zoals de app aangeeft (bijv. <code>5.250</code> of <code>5250</code>).</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">3</div>
+        <div class="hd-step-text">Kies het aantal <strong>periodes</strong> (12, 13 of 14) en stel het <strong>vakantiegeldpercentage</strong> in met de slider.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">4</div>
+        <div class="hd-step-text">Schakel de <strong>leaseauto</strong> in als die bij de arbeidsvoorwaarden hoort (+€&nbsp;6.000). Stel een eventuele <strong>bonus</strong> in via de slider.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">5</div>
+        <div class="hd-step-text">Typ het <strong>overeengekomen fee percentage</strong> in het oranje veld (bijv. <code>23</code>).</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">6</div>
+        <div class="hd-step-text">Lees het <strong>honorarium</strong> af in het grote resultaatvak bovenaan. De berekening gaat live zodra beide verplichte velden gevuld zijn.</div>
+      </div>
+    </div>
+
+    <div class="hd-output">
+      <strong>Wat krijg je terug?</strong><br>
+      Bruto jaarsalaris · Fee percentage · Definitief honorarium in euro's · Go/No-go verdict (minimumdrempel €&nbsp;13.500)
+    </div>
+
+    <div class="hd-example">
+      <div class="hd-example-label">Voorbeeld</div>
+      Maandsalaris €&nbsp;6.000 · 12 periodes · 8% vakantiegeld · leaseauto aan · geen bonus · 23% fee<br>
+      Jaarsalaris = (€&nbsp;6.000 × 12 × 1,08) + €&nbsp;6.000 = €&nbsp;83.760<br>
+      Honorarium = €&nbsp;83.760 × 23% = €&nbsp;19.265 → <strong>Go</strong>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 4. VERDELING PLAATSING -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon" style="background: #f0eeea;">
+        <img src="./img-verdeling.png" alt="Verdeling Plaatsing">
+      </div>
+      <div class="hd-section-title">
+        <h2>Verdeling Plaatsing</h2>
+        <p>De opbrengst van een plaatsing eerlijk verdelen over sales, recruiter en consultant</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Na een bevestigde plaatsing bepaal je wie welk deel van het honorarium ontvangt. Gebruik deze tool om de verdeling inzichtelijk te maken, inclusief eventuele aanbetaling en onboardingregels.
+    </div>
+
+    <div class="hd-steps">
+      <div class="hd-step">
+        <div class="hd-step-num">1</div>
+        <div class="hd-step-text">Open de app en kies <strong>Verdeling Plaatsing</strong>.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">2</div>
+        <div class="hd-step-text">Typ de <strong>dealwaarde exclusief BTW</strong> in het eerste veld (het totale honorarium dat de opdrachtgever betaalt).</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">3</div>
+        <div class="hd-step-text">Schakel <strong>Aanbetaling</strong> in als er al een vooruitbetaling is gedaan. Kies het bedrag: €&nbsp;2.500, €&nbsp;5.000 of €&nbsp;10.000. De app houdt het al ontvangen bedrag bij in de verdeling.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">4</div>
+        <div class="hd-step-text">Voer de namen in van de <strong>sales officer</strong>, <strong>recruiter</strong> en <strong>consultant</strong> die bij deze plaatsing betrokken zijn.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">5</div>
+        <div class="hd-step-text">Zet het <strong>onboarding-schakelaar</strong> aan als iemand in onboarding is. Die persoon draagt dan 20% van zijn deel af aan de betreffende head.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">6</div>
+        <div class="hd-step-text">Lees de verdeling af in het resultatenblok onderaan.</div>
+      </div>
+    </div>
+
+    <div class="hd-output">
+      <strong>Wat krijg je terug?</strong><br>
+      Per persoon: bruto aandeel · netto bedrag na onboarding · al ontvangen via aanbetaling · nog te ontvangen<br><br>
+      Vaste verdeelsleutel: Sales officer 30% · Recruiter 30% · Consultant 40%<br>
+      Aanbetaling gaat 50% naar sales officer en 50% naar consultant — de recruiter ontvangt niets uit de aanbetaling.
+    </div>
+
+    <div class="hd-example">
+      <div class="hd-example-label">Voorbeeld</div>
+      Dealwaarde €&nbsp;20.000 · aanbetaling €&nbsp;5.000 · geen onboarding<br>
+      Sales officer: €&nbsp;6.000 totaal, al ontvangen €&nbsp;2.500 → nog te ontvangen €&nbsp;3.500<br>
+      Recruiter: €&nbsp;6.000 totaal, geen aanbetaling → nog te ontvangen €&nbsp;6.000<br>
+      Consultant: €&nbsp;8.000 totaal, al ontvangen €&nbsp;2.500 → nog te ontvangen €&nbsp;5.500
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 5. PROEFTIJD TRACKER -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon" style="background: #f0eeea;">
+        <img src="./img-proeftijd.png" alt="Proeftijd Tracker">
+      </div>
+      <div class="hd-section-title">
+        <h2>Proeftijd Tracker</h2>
+        <p>Aftelklok per geplaatste kandidaat — je ziet in één oogopslag hoeveel tijd er nog is</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Een kandidaat is gestart bij de opdrachtgever. Tijdens de proeftijd wil je weten wanneer die afloopt, zodat je op het juiste moment contact opneemt met kandidaat en opdrachtgever.
+    </div>
+
+    <div class="hd-steps">
+      <div class="hd-step">
+        <div class="hd-step-num">1</div>
+        <div class="hd-step-text">Open de app en kies <strong>Proeftijd Tracker</strong>.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">2</div>
+        <div class="hd-step-text">Klik op <strong>Kandidaat toevoegen</strong>. Er opent een scherm met drie velden.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">3</div>
+        <div class="hd-step-text">Vul de <strong>naam</strong> van de kandidaat in.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">4</div>
+        <div class="hd-step-text">Kies de <strong>startdatum</strong> van de proeftijd via de dag-, maand- en jaarkeuzelijsten.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">5</div>
+        <div class="hd-step-text">Selecteer de <strong>duur</strong>: 1, 2 of 3 maanden.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">6</div>
+        <div class="hd-step-text">Klik op <strong>Toevoegen</strong>. De kandidaat verschijnt direct op het scherm met een aftelklok.</div>
+      </div>
+      <div class="hd-step">
+        <div class="hd-step-num">7</div>
+        <div class="hd-step-text">Verwijder een kandidaat via het kruisje rechtsboven op de kaart als de proeftijd afgerond is of als de plaatsing is gestopt.</div>
+      </div>
+    </div>
+
+    <div class="hd-output">
+      <strong>Wat krijg je terug?</strong><br>
+      Per kandidaat: aftelklok in dagen (D), uren (U) en minuten (M) · voortgangsbalk · start- en einddatum<br>
+      Als de proeftijd voorbij is, verschijnt "GESLAAGD" op de klok en kleurt de kaart groen.<br>
+      Je kunt maximaal 6 kandidaten tegelijk bijhouden. De gegevens blijven bewaard als je de browser sluit.
+    </div>
+
+    <div class="hd-warning">
+      <svg class="hd-warning-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7" stroke="#854f0b" stroke-width="1.5"/>
+        <path d="M8 5V8.5" stroke="#854f0b" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="8" cy="11" r="0.75" fill="#854f0b"/>
+      </svg>
+      <span>De gegevens worden opgeslagen in de browser waarmee je de app opent. Als je van apparaat of browser wisselt, zijn de kandidaten daar niet zichtbaar.</span>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 6. PIPELINE -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon pip">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <rect x="3" y="5" width="20" height="3" rx="1.5" fill="white"/>
+          <rect x="3" y="11.5" width="14" height="3" rx="1.5" fill="white"/>
+          <rect x="3" y="18" width="9" height="3" rx="1.5" fill="white"/>
+          <circle cx="21" cy="19.5" r="3.5" fill="#2d7dd2"/>
+          <path d="M19.5 19.5L21 21L23 18.5" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="hd-section-title">
+        <h2>Pipeline</h2>
+        <p>Goedgekeurde vacatures beheren en toewijzen aan recruiters</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Als teamlead wil je een overzicht van alle actieve vacatures en bijhouden welke recruiter waar mee bezig is.
+    </div>
+
+    <div class="hd-output">
+      Gebruik de Pipeline om vacatures te beheren, de status bij te houden en toe te wijzen aan een recruiter. Open de tool via de app en volg de instructies op het scherm.
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 7. SALES DASHBOARD -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon sal">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <rect x="3" y="17" width="4" height="6" rx="1.2" fill="#1db954"/>
+          <rect x="9" y="13" width="4" height="10" rx="1.2" fill="#1db954" opacity="0.75"/>
+          <rect x="15" y="9" width="4" height="14" rx="1.2" fill="#1db954" opacity="0.55"/>
+          <rect x="21" y="5" width="4" height="18" rx="1.2" fill="#1db954" opacity="0.35"/>
+          <path d="M4 16L10 12L16 8L22 4" stroke="#1db954" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="hd-section-title">
+        <h2>Sales Dashboard</h2>
+        <p>Leads opvolgen en de salesstatus per vacature bijhouden</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Je wil een overzicht van je eigen leads en de huidige status van elke vacature in je salesproces.
+    </div>
+
+    <div class="hd-output">
+      Gebruik het Sales Dashboard om de status van vacatures bij te houden — van eerste contact tot bevestigde opdracht. Open de tool via de app en volg de instructies op het scherm.
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- 8. DASHBOARD -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-section">
+    <div class="hd-section-header">
+      <div class="hd-section-icon das">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <rect x="3" y="3" width="9" height="9" rx="2" fill="#2d7dd2" opacity="0.9"/>
+          <rect x="14" y="3" width="9" height="5" rx="2" fill="#2d7dd2" opacity="0.5"/>
+          <rect x="14" y="10" width="9" height="2" rx="1" fill="#2d7dd2" opacity="0.3"/>
+          <rect x="3" y="14" width="5" height="9" rx="2" fill="#1db954" opacity="0.8"/>
+          <rect x="10" y="17" width="5" height="6" rx="2" fill="#1db954" opacity="0.6"/>
+          <rect x="17" y="14" width="6" height="9" rx="2" fill="#f4a261" opacity="0.75"/>
+        </svg>
+      </div>
+      <div class="hd-section-title">
+        <h2>Dashboard</h2>
+        <p>Overzicht van vacatures, sales en conversiestatistieken</p>
+      </div>
+    </div>
+
+    <div class="hd-usecase">
+      <strong>Wanneer gebruik je dit?</strong> Je wil op managementniveau zien hoe het team presteert: hoeveel vacatures lopen er, wat is de conversieratio, waar zit de pijplijn vol?
+    </div>
+
+    <div class="hd-output">
+      Gebruik het Dashboard voor een totaaloverzicht van het recruitmentproces. Open de tool via de app en volg de instructies op het scherm.
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <!-- TIPS -->
+  <!-- ─────────────────────────────────────────────────────────────── -->
+  <div class="hd-tips">
+    <h2>Handige tips</h2>
+    <div class="hd-tip-list">
+      <div class="hd-tip">
+        <div class="hd-tip-dot"></div>
+        <span><strong>Voeg de app toe aan je beginscherm.</strong> Open de app in Safari op je iPhone, tik op het deel-icoon en kies "Voeg toe aan beginscherm". De app opent dan als een gewone app, zonder adresbalk.</span>
+      </div>
+      <div class="hd-tip">
+        <div class="hd-tip-dot"></div>
+        <span><strong>Oranje rand = verplicht veld.</strong> In de Fee Checker, Definitief Honorarium en Verdeling Plaatsing kleuren verplichte velden oranje totdat je ze invult. Als het veld groen kleurt, is de invoer correct.</span>
+      </div>
+      <div class="hd-tip">
+        <div class="hd-tip-dot"></div>
+        <span><strong>Getallen invoeren in Nederlandse notatie.</strong> Gebruik een punt als duizendtalen-separator en een komma als decimaalteken: <code>5.250</code> of <code>5.250,50</code>. Je kunt ook zonder scheidingsteken typen: <code>5250</code> werkt ook.</span>
+      </div>
+      <div class="hd-tip">
+        <div class="hd-tip-dot"></div>
+        <span><strong>Proeftijd Tracker werkt alleen op je eigen apparaat.</strong> De gegevens staan opgeslagen in je browser. Wil je de tracker ook op een ander apparaat gebruiken, voeg de kandidaten dan opnieuw in.</span>
+      </div>
+      <div class="hd-tip">
+        <div class="hd-tip-dot"></div>
+        <span><strong>Sales Overdracht geeft een foutmelding?</strong> Controleer of alle verplichte velden oranje zijn. Soms lijkt een veld ingevuld maar is er een spatie ingetypt. Controleer ook of je verbinding hebt — de e-mail wordt via internet verstuurd.</span>
+      </div>
+      <div class="hd-tip">
+        <div class="hd-tip-dot"></div>
+        <span><strong>De app werkt ook in het donker.</strong> Als je telefoon of laptop op donkere modus staat, past de app daar automatisch op aan.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="hd-footer">
+    BURG QHSSE &middot; 2026
+  </div>
+
+</div>
+</body>
+</html>
