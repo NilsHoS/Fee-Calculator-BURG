@@ -1,0 +1,12 @@
+{
+  "appId": "nl.burgqhsse.tools",
+  "appName": "BURG Tools",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "preferredContentMode": "mobile"
+  }
+}

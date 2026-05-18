@@ -10,39 +10,9 @@
 <meta name="theme-color" content="#0a0a0f">
 <title>BURG Sales Dashboard</title>
 <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<link rel="stylesheet" href="./styles-dark.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --blue: #0f3460;
-    --blue-mid: #1a4f8c;
-    --blue-light: #2d7dd2;
-    --go: #1db954;
-    --nogo: #e63946;
-    --amber: #f4a261;
-    --purple: #9b5de5;
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c27;
-    --border: rgba(255,255,255,0.08);
-    --text: #f0f0f5;
-    --text-muted: #8888a0;
-  }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-  }
-
-  /* ── Login ── */
+  /* ── Login wrapper (paginaspecifiek) ── */
 
   .login-wrap {
     min-height: 100vh;
@@ -53,38 +23,7 @@
     padding: 2rem 1rem;
   }
 
-  .login-box {
-    width: 100%;
-    max-width: 360px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .login-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--text); letter-spacing: -0.5px; }
-  .login-logo span { color: var(--blue-light); }
-  .login-subtitle { font-size: 13px; color: var(--text-muted); margin-top: -4px; }
-
-  .login-form { display: flex; flex-direction: column; gap: 10px; }
-
-  .login-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    padding: 12px 14px;
-    outline: none;
-    width: 100%;
-    transition: border-color 0.15s;
-  }
-  .login-input:focus { border-color: var(--blue-light); }
-  .login-input::placeholder { color: var(--text-muted); }
+  /* ── Login knop (HTML gebruikt .login-btn, styles-dark heeft .btn-primary) ── */
 
   .login-btn {
     background: var(--blue-light);
@@ -97,14 +36,13 @@
     padding: 13px;
     cursor: pointer;
     transition: opacity 0.15s;
+    width: 100%;
     margin-top: 4px;
   }
   .login-btn:hover { opacity: 0.85; }
   .login-btn:disabled { opacity: 0.5; cursor: default; }
 
-  .login-error { font-size: 13px; color: var(--nogo); min-height: 18px; text-align: center; }
-
-  /* ── Dashboard ── */
+  /* ── Dashboard wrapper (paginaspecifiek flex-layout) ── */
 
   #dashboard {
     width: 100%;
@@ -113,17 +51,14 @@
     align-items: center;
   }
 
+  /* ── Header breedte voor sales (max 700px, paginaspecifiek) ── */
+
   .header {
     width: 100%;
     max-width: 700px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 20px 10px;
   }
 
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--text); letter-spacing: -0.5px; }
-  .logo span { color: var(--blue-light); }
+  /* ── Logout knop (HTML gebruikt .logout-btn, styles-dark heeft .btn-ghost) ── */
 
   .logout-btn {
     background: transparent;
@@ -138,190 +73,23 @@
   }
   .logout-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
 
-  .status-summary {
-    width: 100%;
-    max-width: 700px;
-    padding: 0 20px 14px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+  /* ── Back-link fixed positie (paginaspecifiek, styles-dark heeft .back-link--fixed) ── */
+
+  .back-link {
+    position: fixed;
+    top: 18px;
+    left: 16px;
+    z-index: 200;
   }
 
-  .summary-chip {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
+  /* ── Card title vacature (HTML gebruikt .card-title, styles-dark heeft .card-title--vacancy) ── */
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.2;
   }
-  .summary-chip.active { background: var(--blue-light); border-color: var(--blue-light); color: white; }
-  .summary-chip:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .summary-chip .chip-count { font-weight: 700; }
-
-  .list {
-    width: 100%;
-    max-width: 700px;
-    padding: 0 20px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .vacancy-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    transition: border-color 0.15s;
-  }
-  .vacancy-card:hover { border-color: rgba(255,255,255,0.14); }
-
-  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-  .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; line-height: 1.2; }
-  .card-company { font-size: 16px; color: var(--blue-light); font-weight: 600; margin-top: 4px; }
-
-  .status-badge-go {
-    flex-shrink: 0;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-    background: rgba(29,185,84,0.15);
-    color: var(--go);
-  }
-
-  .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
-  .meta-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
-  .meta-chip a { color: var(--blue-light); text-decoration: none; }
-  .meta-chip a:hover { text-decoration: underline; }
-
-  .info-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-  .info-badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .info-badge-salary { background: rgba(29,185,84,0.12); color: var(--go); }
-  .info-badge-type { background: rgba(45,125,210,0.12); color: var(--blue-light); }
-  .info-badge-industry { background: rgba(244,162,97,0.12); color: var(--amber); }
-
-  .li-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #0077b5; border-radius: 3px; font-size: 9px; font-weight: 800; color: white; text-decoration: none; font-family: 'Syne', sans-serif; vertical-align: middle; margin-left: 5px; flex-shrink: 0; line-height: 1; }
-  .li-badge:hover { opacity: 0.8; }
-
-  .contact-section { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
-  .contact-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
-  .contact-grid { display: flex; flex-wrap: wrap; gap: 14px; }
-  .contact-block { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 4px; }
-  .contact-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
-  .contact-person-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; }
-  .contact-person-headline { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-  .contact-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue-light); text-decoration: none; word-break: break-all; }
-  .contact-link:hover { text-decoration: underline; }
-  .contact-address { font-size: 12px; color: var(--text-muted); }
-  .apollo-tag { font-size: 9px; background: rgba(244,162,97,0.15); color: var(--amber); padding: 1px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
-  .apollo-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.45; font-style: italic; }
-
-  .enrich-section { margin-bottom: 14px; }
-  .enrich-details { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
-  .enrich-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; }
-  .badge-no-apollo { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(150,150,150,0.15); border: 1px solid rgba(150,150,150,0.35); color: #999; }
-  .badge-not-enriched { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(244,162,97,0.18); border: 1px solid rgba(244,162,97,0.45); color: #f4a261; }
-  .badge-enriched { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(29,185,84,0.12); border: 1px solid rgba(29,185,84,0.35); color: var(--go); }
-
-  /* ── Sales section ── */
-
-  .sales-section {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .sales-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; }
-  .sales-field { display: flex; flex-direction: column; gap: 5px; }
-  .sales-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 500; }
-
-  .status-btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
-  .status-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    padding: 5px 12px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-  }
-  .status-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .status-btn.active[data-status="Te contacteren"] { border-color: rgba(255,255,255,0.3); color: var(--text); background: rgba(255,255,255,0.06); }
-  .status-btn.active[data-status="Gebeld"] { border-color: rgba(45,125,210,0.6); color: var(--blue-light); background: rgba(45,125,210,0.1); }
-  .status-btn.active[data-status="Gemaild"] { border-color: rgba(45,125,210,0.6); color: var(--blue-light); background: rgba(45,125,210,0.1); }
-  .status-btn.active[data-status="Geen reactie"] { border-color: rgba(244,162,97,0.6); color: var(--amber); background: rgba(244,162,97,0.1); }
-  .status-btn.active[data-status="Hot lead"] { border-color: rgba(230,57,70,0.6); color: #e87070; background: rgba(230,57,70,0.1); }
-  .status-btn.active[data-status="Afgerond"] { border-color: rgba(29,185,84,0.6); color: var(--go); background: rgba(29,185,84,0.1); }
-
-  .sales-notes-textarea {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 8px 10px;
-    width: 100%;
-    resize: vertical;
-    min-height: 72px;
-    outline: none;
-    line-height: 1.5;
-    transition: border-color 0.15s;
-  }
-  .sales-notes-textarea:focus { border-color: var(--blue-light); }
-  .sales-notes-textarea::placeholder { color: var(--text-muted); opacity: 0.6; }
-
-  .saving-indicator { font-size: 11px; color: var(--text-muted); text-align: right; min-height: 16px; }
-  .saving-indicator.active { color: var(--amber); }
-  .saving-indicator.saved { color: var(--go); }
-
-  /* ── States ── */
-
-  .loading-state, .empty-state {
-    width: 100%;
-    max-width: 700px;
-    padding: 80px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    color: var(--text-muted);
-    font-size: 14px;
-    text-align: center;
-  }
-  .empty-state span { font-size: 40px; margin-bottom: 4px; }
-
-  .spinner { width: 32px; height: 32px; border: 3px solid var(--surface2); border-top-color: var(--blue-light); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .toast {
-    position: fixed; bottom: 28px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 20px;
-    font-size: 13px; color: var(--text); z-index: 999;
-    transition: transform 0.3s ease; white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .back-link { position: fixed; top: 18px; left: 16px; font-size: 12px; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 4px; z-index: 200; }
-  .back-link:hover { color: var(--text); }
 </style>
 </head>
 <body>

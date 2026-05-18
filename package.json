@@ -1,0 +1,15 @@
+{
+  "name": "burg-tools",
+  "version": "1.0.0",
+  "description": "BURG QHSSE Tools app",
+  "private": true,
+  "scripts": {
+    "sync": "npx cap sync",
+    "open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/cli": "6.2.1",
+    "@capacitor/core": "6.2.1",
+    "@capacitor/ios": "6.2.1"
+  }
+}

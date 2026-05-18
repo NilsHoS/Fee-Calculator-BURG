@@ -9,31 +9,22 @@
   <link rel="manifest" href="/BURG-Apps/manifest.json">
   <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
   <title>BURG — Proeftijd Tracker</title>
+  <link rel="stylesheet" href="./styles.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /* ── Pagina-layout override ── */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f4f0;
-      color: #1a1a18;
-      min-height: 100vh;
+      display: block;
       padding: 2.5rem 1.5rem;
     }
 
     .wrap { width: 100%; max-width: 960px; margin: 0 auto; }
 
-    .back {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 13px; color: #73726c; text-decoration: none;
-      margin-bottom: 1.5rem;
-    }
-    .back:hover { color: #1a1a18; }
-
+    /* ── Pagina header ── */
     .page-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 12px;
     }
-    .page-header h1 { font-size: 24px; font-weight: 500; }
+    .page-header h1 { font-size: 24px; font-weight: 500; margin-bottom: 0; }
     .page-header p { font-size: 14px; color: #73726c; margin-top: 2px; }
 
     /* ── Add button ── */
@@ -265,10 +256,7 @@
 
     /* ── Dark mode ── */
     @media (prefers-color-scheme: dark) {
-      body { background: #1e1e1c; color: #e0dfd8; }
-      .back { color: #5f5e5a; }
-      .back:hover { color: #e0dfd8; }
-      .page-header h1 { color: #e0dfd8; }
+      body { display: block; }
       .page-header p { color: #5f5e5a; }
       .candidate-card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
       .candidate-card.done { background: #1a2e10; border-color: rgba(59,109,17,0.4); }

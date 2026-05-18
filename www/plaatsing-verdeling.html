@@ -2,19 +2,125 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a1a18">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="BURG Plaatsing">
-  <link rel="manifest" href="/BURG-Apps/manifest.json">
-  <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <title>Provisie Calculator W&S Plaatsing</title>
-  <link rel="stylesheet" href="./styles.css">
   <style>
-    /* Aanbetaling knoppen */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      color: #1a1a18;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: #73726c;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back:hover { color: #1a1a18; }
+
+    h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; color: #1a1a18; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
+
+    .metric { background: #f5f4f0; border-radius: 8px; padding: 12px 14px; }
+    .metric.accent { background: #1a1a18; }
+    .metric-label { font-size: 12px; color: #73726c; margin-bottom: 3px; }
+    .metric.accent .metric-label { color: #888780; }
+    .metric-value { font-size: 19px; font-weight: 500; color: #1a1a18; }
+    .metric.accent .metric-value { color: #f5f4f0; font-size: 22px; }
+
+    .section-title {
+      font-size: 11px; font-weight: 500; color: #b4b2a9;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin: 1.25rem 0 0.75rem;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .required-banner {
+      background: #faeeda; border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; color: #854f0b; margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .required-banner.hidden { display: none; }
+
+    .controls { display: flex; flex-direction: column; gap: 14px; margin-bottom: 1.25rem; }
+    .control-row { display: flex; flex-direction: column; gap: 6px; }
+    .control-label { font-size: 12px; color: #73726c; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+    .required-dot { width: 6px; height: 6px; background: #ef9f27; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .required-dot.filled { background: #3b6d11; }
+    .control-input { display: flex; align-items: center; gap: 10px; }
+
+    .text-input-wrap {
+      display: flex; align-items: center; flex: 1;
+      border: 1.5px solid rgba(0,0,0,0.15); border-radius: 8px;
+      overflow: hidden; background: #fff; transition: border-color 0.2s;
+    }
+    .text-input-wrap.needs-input { border-color: #ef9f27; }
+    .text-input-wrap.has-input { border-color: #3b6d11; }
+
+    .input-prefix {
+      padding: 10px; font-size: 14px; color: #73726c;
+      background: #f5f4f0; border-right: 1px solid rgba(0,0,0,0.1); white-space: nowrap;
+    }
+    .text-input-wrap input[type="number"] {
+      flex: 1; border: none; outline: none; padding: 10px 12px;
+      font-size: 16px; font-weight: 500; color: #1a1a18;
+      background: transparent; -moz-appearance: textfield; width: 100%;
+    }
+    .text-input-wrap input[type="number"]::-webkit-outer-spin-button,
+    .text-input-wrap input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .text-input-wrap input[type="text"] {
+      flex: 1; border: none; outline: none; padding: 10px 12px;
+      font-size: 15px; color: #1a1a18; background: transparent; width: 100%;
+    }
+
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0; background: #d3d1c7;
+      border-radius: 12px; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: #1a1a18; }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+      background: #fff; border-radius: 50%; pointer-events: none; transition: transform 0.2s;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+    .toggle-val { font-size: 13px; color: #73726c; }
     .aanbetaling-btn {
       padding: 6px 14px; border-radius: 6px; border: 1.5px solid #d0cfc9;
       background: #fff; font-size: 13px; cursor: pointer; color: #3a3a36;
@@ -25,7 +131,6 @@
     }
     .aanbetaling-btn:hover:not(.selected) { border-color: #2d7a3a; color: #2d7a3a; }
 
-    /* Persoon invoerblokken */
     .person-block {
       border: 0.5px solid rgba(0,0,0,0.10); border-radius: 10px;
       padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
@@ -35,7 +140,8 @@
     .onboarding-row { display: flex; align-items: center; gap: 10px; }
     .onboarding-label { font-size: 12px; color: #73726c; flex: 1; }
 
-    /* Resultatenweergave */
+    .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.08); margin: 0.5rem 0; }
+
     .results { display: flex; flex-direction: column; gap: 8px; margin-top: 1.25rem; }
 
     .result-row {
@@ -51,13 +157,11 @@
     .result-amount { font-size: 12px; color: #73726c; }
     .result-restant { font-size: 12px; color: #3b6d11; font-weight: 500; }
 
-    /* Onboarding badge */
     .badge-onboarding {
       display: inline-block; font-size: 10px; background: #faeeda; color: #854f0b;
       padding: 2px 7px; border-radius: 6px; margin-left: 5px; vertical-align: middle; font-weight: 400;
     }
 
-    /* Totaalsectie */
     .totaal-block {
       border-top: 0.5px solid rgba(0,0,0,0.10); margin-top: 4px; padding-top: 10px;
       display: flex; flex-direction: column; gap: 4px;
@@ -66,13 +170,46 @@
     .totaal-row-item span { color: #73726c; }
     .totaal-row-item strong { color: #1a1a18; }
 
-    /* Lege toestand */
     .idle-state { background: #f5f4f0; border-radius: 8px; padding: 14px; font-size: 14px; color: #73726c; text-align: center; }
 
-    /* Dark mode — pagina-specifieke klassen */
+    @media (min-width: 640px) {
+      body { padding: 2.5rem 1.5rem; align-items: center; }
+      .card { max-width: 780px; padding: 2rem; }
+      h1 { font-size: 20px; }
+      .metrics { grid-template-columns: 1fr 1fr 1fr 1fr; }
+      .metric-value { font-size: 22px; }
+      .metric.accent .metric-value { font-size: 26px; }
+      .layout-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    }
+
     @media (prefers-color-scheme: dark) {
+      body { background: #1e1e1c; color: #e0dfd8; }
+      .card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
+      h1 { color: #e0dfd8; }
+      .back { color: #5f5e5a; }
+      .back:hover { color: #e0dfd8; }
+      .metric { background: #333330; }
+      .metric.accent { background: #e0dfd8; }
+      .metric-label { color: #888780; }
+      .metric.accent .metric-label { color: #73726c; }
+      .metric-value { color: #e0dfd8; }
+      .metric.accent .metric-value { color: #1a1a18; }
+      .section-title { color: #5f5e5a; }
+      .control-label { color: #888780; }
+      .required-banner { background: #633806; color: #fac775; }
+      .text-input-wrap { border-color: rgba(255,255,255,0.15); background: #333330; }
+      .text-input-wrap.needs-input { border-color: #ef9f27; }
+      .text-input-wrap.has-input { border-color: #3b6d11; }
+      .input-prefix { background: #2a2a28; border-color: rgba(255,255,255,0.1); color: #888780; }
+      .text-input-wrap input[type="number"],
+      .text-input-wrap input[type="text"] { color: #e0dfd8; background: #333330; }
+      .toggle-track { background: #444441; }
+      .toggle input:checked + .toggle-track { background: #e0dfd8; }
+      .toggle-thumb { background: #2a2a28; }
+      .toggle-val { color: #888780; }
       .person-block { border-color: rgba(255,255,255,0.08); }
       .onboarding-label { color: #888780; }
+      .divider { border-color: rgba(255,255,255,0.08); }
       .result-row { background: #333330; }
       .result-row.head-row { background: #2a2a28; border-color: rgba(255,255,255,0.08); }
       .result-name { color: #e0dfd8; }
@@ -90,7 +227,7 @@
 </head>
 <body>
   <div class="card">
-    <a href="/BURG-Apps/" class="back">‹ Terug</a>
+    <a href="./index.html" class="back">‹ Terug</a>
     <h1>Provisie Calculator W&S Plaatsing</h1>
 
     <div class="required-banner" id="banner">
@@ -224,7 +361,7 @@
 
   <script>
     function fmt(n) {
-      return '€ ' + Math.round(n).toLocaleString('nl-NL');
+      return '\u20ac\u00a0' + Math.round(n).toLocaleString('nl-NL');
     }
     function fmtPct(n) {
       return (Math.round(n * 10) / 10).toLocaleString('nl-NL') + '%';
@@ -265,7 +402,7 @@
       const obCon     = document.getElementById('ob-con').checked;
 
       const bedragLabel = heeftAanbetaling ? geselecteerdeAanbetaling.toLocaleString('nl-NL') : '0';
-      document.getElementById('lbl-aanbetaling').textContent = heeftAanbetaling ? `Ja — € ${bedragLabel}` : 'Nee — € 0';
+      document.getElementById('lbl-aanbetaling').textContent = heeftAanbetaling ? `Ja \u2014 \u20ac\u00a0${bedragLabel}` : 'Nee \u2014 \u20ac\u00a00';
 
       const wrap = document.getElementById('wrap-deal');
       wrap.className = deal > 0 ? 'text-input-wrap has-input' : 'text-input-wrap needs-input';
@@ -286,10 +423,10 @@
       document.getElementById('banner').classList.toggle('hidden', allFilled);
 
       if (deal <= 0) {
-        document.getElementById('out-deal').textContent      = '—';
-        document.getElementById('out-aanbetaling').textContent = '—';
-        document.getElementById('out-al').textContent        = '—';
-        document.getElementById('out-restant').textContent   = '—';
+        document.getElementById('out-deal').textContent      = '\u2014';
+        document.getElementById('out-aanbetaling').textContent = '\u2014';
+        document.getElementById('out-al').textContent        = '\u2014';
+        document.getElementById('out-restant').textContent   = '\u2014';
         document.getElementById('results-wrap').innerHTML    = '<div class="idle-state">Vul een dealwaarde in om de verdeling te berekenen</div>';
         return;
       }
@@ -330,7 +467,7 @@
 
       // Update metrics
       document.getElementById('out-deal').textContent        = fmt(deal);
-      document.getElementById('out-aanbetaling').textContent = aanbetaling > 0 ? fmt(aanbetaling) : '—';
+      document.getElementById('out-aanbetaling').textContent = aanbetaling > 0 ? fmt(aanbetaling) : '\u2014';
       document.getElementById('out-al').textContent          = aanbetaling > 0 ? fmt(aanbetaling) : fmt(0);
       document.getElementById('out-restant').textContent     = fmt(totaalRestant);
 

@@ -2,12 +2,10 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a1a18">
-  <link rel="manifest" href="/BURG-Apps/manifest.json">
-  <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <title>BURG — Jobpull Overdracht</title>
 
   <!-- EmailJS -->
@@ -30,78 +28,190 @@
     // ─────────────────────────────────────────────────────────────────────────
   </script>
 
-  <link rel="stylesheet" href="./styles.css">
-
   <style>
-    /* Jobpull-specifiek: brede wrap (styles.css .card = 560px, jobpull heeft 860px) */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      color: #1a1a18;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* ── Mobiel blokkeren ── */
+    .mobile-block {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 100vh;
+      padding: 2rem;
+      gap: 1rem;
+    }
+    .mobile-block .icon { font-size: 48px; }
+    .mobile-block h2 { font-size: 20px; font-weight: 500; }
+    .mobile-block p { font-size: 14px; color: #73726c; line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      body > .wrap { display: none; }
+      .mobile-block { display: flex; }
+    }
+
+    /* ── Layout ── */
     .wrap { width: 100%; max-width: 860px; }
 
-    /* Jobpull-specifiek: page-header blok */
+    .back {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 13px; color: #73726c; text-decoration: none;
+      margin-bottom: 1.5rem;
+    }
+    .back:hover { color: #1a1a18; }
+
     .page-header { margin-bottom: 2rem; }
     .page-header h1 { font-size: 24px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
     .page-header p { font-size: 14px; color: #73726c; }
 
-    /* Jobpull-specifiek: back link extra marge */
-    .back { margin-bottom: 1.5rem; }
-
-    /* Jobpull-specifiek: oranje toggle variant (zit niet in styles.css) */
-    .btn-toggle.active-orange { background: #c47d00; color: #fff; border-color: #c47d00; }
-
-    /* Jobpull-specifiek: submit-wrap flex-wrap */
-    .submit-wrap { flex-wrap: wrap; }
-
-    /* Jobpull-specifiek: time drum picker */
-    .time-picker-wrap {
-      display: flex; align-items: center; gap: 4px;
-      border: 1.5px solid rgba(0,0,0,0.15); border-radius: 10px;
-      padding: 4px 8px; background: #fff; overflow: hidden;
-    }
-    .drum-col {
-      flex: 1; height: 120px; overflow-y: scroll;
-      scroll-snap-type: y mandatory; scrollbar-width: none;
-      position: relative;
-    }
-    .drum-col::-webkit-scrollbar { display: none; }
-    .drum-item {
-      height: 40px; display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 500; color: #1a1a18;
-      scroll-snap-align: center; cursor: pointer; border-radius: 6px;
-      transition: background 0.1s;
-    }
-    .drum-item.selected { color: #1a1a18; background: rgba(0,0,0,0.06); border-radius: 6px; }
-    .drum-item:not(.selected) { color: #b0afa8; }
-    .drum-sep { font-size: 20px; font-weight: 600; color: #1a1a18; padding: 0 2px; }
-    .tijd-bevestiging {
-      display: flex; align-items: center; gap: 6px; margin-top: 8px;
-      font-size: 13px; color: #3b6d11; font-weight: 500;
-    }
-    .tijd-bevestiging span { font-weight: 700; }
-    /* Padding items zodat eerste/laatste item centreerbaar zijn */
-    .drum-col::before, .drum-col::after {
-      content: ''; display: block; height: 40px;
+    /* ── Card sections ── */
+    .section-card {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 16px;
     }
 
-    /* Desktop: jobpull body blijft flex-start (styles.css zet center op 640px) */
-    @media (min-width: 640px) {
-      body { align-items: flex-start; }
+    .section-label {
+      font-size: 11px; font-weight: 600; color: #b4b2a9;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 1.25rem;
     }
 
-    /* Dark mode: page-header en drum picker */
+    /* ── Grid layouts ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* ── Form fields ── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label { font-size: 12px; font-weight: 500; color: #73726c; }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1.5px solid rgba(0,0,0,0.15);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1a1a18;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #1a1a18; }
+    input.filled, textarea.filled, select.filled { border-color: #3b6d11; }
+
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2373726c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+    /* ── Toggle buttons ── */
+    .btn-toggle-group { display: flex; gap: 8px; }
+    .btn-toggle {
+      flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 500;
+      border-radius: 8px; border: 1.5px solid rgba(0,0,0,0.15);
+      background: transparent; color: #73726c; cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .btn-toggle:hover { border-color: rgba(0,0,0,0.35); color: #1a1a18; }
+    .btn-toggle.active { background: #1a1a18; color: #f5f4f0; border-color: #1a1a18; }
+    .btn-toggle.active-green { background: #3b6d11; color: #fff; border-color: #3b6d11; }
+    .btn-toggle.active-red { background: #a32d2d; color: #fff; border-color: #a32d2d; }
+
+    /* ── Conditional block ── */
+    .conditional {
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .conditional.visible { max-height: 300px; opacity: 1; }
+    .conditional .grid-2 { margin-top: 16px; }
+
+    /* ── Submit ── */
+    .submit-wrap { display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-top: 8px; }
+    .submit-note { font-size: 12px; color: #73726c; }
+
+    .btn-submit {
+      padding: 12px 32px; background: #1a1a18; color: #f5f4f0;
+      border: none; border-radius: 10px; font-size: 15px; font-weight: 500;
+      font-family: inherit; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Status banner ── */
+    .status-banner {
+      border-radius: 10px; padding: 14px 18px; font-size: 14px; font-weight: 500;
+      margin-top: 16px; display: none; align-items: center; gap: 10px;
+    }
+    .status-banner.success { display: flex; background: #eaf3de; color: #3b6d11; }
+    .status-banner.error   { display: flex; background: #fcebeb; color: #a32d2d; }
+    .status-banner.sending { display: flex; background: #f5f4f0; color: #73726c; }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.08); margin: 1.25rem 0; }
+
+    /* ── Dark mode ── */
     @media (prefers-color-scheme: dark) {
+      body { background: #1e1e1c; color: #e0dfd8; }
+      .section-card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
       .page-header h1 { color: #e0dfd8; }
-      .page-header p { color: #888780; }
-      .time-picker-wrap { background: #333330; border-color: rgba(255,255,255,0.15); }
-      .drum-item { color: #b0afa8; }
-      .drum-item.selected { color: #e0dfd8; background: rgba(255,255,255,0.08); }
-      .drum-sep { color: #e0dfd8; }
-      .tijd-bevestiging { color: #97c459; }
+      .page-header p, label { color: #888780; }
+      .section-label { color: #5f5e5a; }
+      .back { color: #5f5e5a; }
+      .back:hover { color: #e0dfd8; }
+      input[type="text"], input[type="date"], input[type="time"],
+      input[type="email"], textarea, select {
+        background: #333330; border-color: rgba(255,255,255,0.15); color: #e0dfd8;
+      }
+      input:focus, textarea:focus, select:focus { border-color: #e0dfd8; }
+      input.filled, textarea.filled, select.filled { border-color: #97c459; }
+      .btn-toggle { border-color: rgba(255,255,255,0.2); color: #888780; }
+      .btn-toggle:hover { border-color: rgba(255,255,255,0.4); color: #e0dfd8; }
+      .btn-toggle.active { background: #e0dfd8; color: #1a1a18; border-color: #e0dfd8; }
+      .submit-note { color: #888780; }
+      .btn-submit { background: #e0dfd8; color: #1a1a18; }
+      .status-banner.success { background: #27500a; color: #c0dd97; }
+      .status-banner.error   { background: #791f1f; color: #f7c1c1; }
+      .status-banner.sending { background: #333330; color: #888780; }
+      .mobile-block h2 { color: #e0dfd8; }
+      .mobile-block p { color: #888780; }
+      .divider { border-color: rgba(255,255,255,0.08); }
     }
   </style>
 </head>
 <body>
 
+  <!-- Mobiel blokkeren -->
+  <div class="mobile-block">
+    <div class="icon">🖥️</div>
+    <h2>Alleen beschikbaar op desktop</h2>
+    <p>De Jobpull Overdracht is alleen beschikbaar op een computer. Open deze pagina op je laptop of desktop.</p>
+  </div>
+
   <div class="wrap">
-    <a href="/BURG-Apps/" class="back">‹ Terug</a>
+    <a href="./index.html" class="back">‹ Terug</a>
 
     <div class="page-header">
       <h1>Jobpull Overdracht</h1>
@@ -113,8 +223,8 @@
       <div class="section-label">Betrokkenen</div>
       <div class="grid-3">
         <div class="field">
-          <label>Sales</label>
-          <input type="text" id="sales-naam" placeholder="Naam Salestijger" oninput="markFilled(this)">
+          <label>Naam salesconsultant</label>
+          <input type="text" id="sales-naam" placeholder="Voornaam Achternaam" oninput="markFilled(this)">
         </div>
         <div class="field">
           <label>Bedrijfsnaam</label>
@@ -164,19 +274,7 @@
         </div>
         <div class="field">
           <label>Tijd afspraak</label>
-          <div class="time-picker-wrap" id="tijd-wrap">
-            <div class="drum-col" id="drum-hour"></div>
-            <div class="drum-sep">:</div>
-            <div class="drum-col" id="drum-min"></div>
-          </div>
-          <div class="tijd-bevestiging" id="tijd-bevestiging">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <circle cx="6.5" cy="6.5" r="6.5" fill="#3b6d11"/>
-              <path d="M3.5 6.5L5.5 8.5L9.5 4.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span id="tijd-label">08:00</span> geselecteerd
-          </div>
-          <input type="hidden" id="tijd">
+          <input type="time" id="tijd" oninput="markFilled(this)">
         </div>
         <div class="field">
           <label>Type afspraak</label>
@@ -232,8 +330,8 @@
         <div class="field">
           <label>Zijn er andere bureaus ingeschakeld?</label>
           <div class="btn-toggle-group">
-            <button class="btn-toggle" onclick="setBureaus('Nee', this)">Nee</button>
             <button class="btn-toggle" onclick="setBureaus('Ja', this)">Ja</button>
+            <button class="btn-toggle" onclick="setBureaus('Nee', this)">Nee</button>
             <button class="btn-toggle" onclick="setBureaus('Onbekend', this)">Onbekend</button>
           </div>
           <input type="hidden" id="bureaus" value="">
@@ -242,8 +340,8 @@
         <div class="field">
           <label>Zijn er kandidaten in proces?</label>
           <div class="btn-toggle-group">
-            <button class="btn-toggle" onclick="setKandidaten('Nee', this)">Nee</button>
             <button class="btn-toggle" onclick="setKandidaten('Ja', this)">Ja</button>
+            <button class="btn-toggle" onclick="setKandidaten('Nee', this)">Nee</button>
             <button class="btn-toggle" onclick="setKandidaten('Onbekend', this)">Onbekend</button>
           </div>
           <input type="hidden" id="kandidaten" value="">
@@ -254,32 +352,13 @@
           <input type="text" id="salaris" placeholder="bijv. € 4.500 – € 6.000 / mnd" oninput="markFilled(this)">
         </div>
 
-        <div class="field full">
+        <div class="field">
           <label>Voorwaarden aanwezig?</label>
-          <div class="btn-toggle-group" style="max-width:200px;">
+          <div class="btn-toggle-group">
             <button class="btn-toggle" onclick="setVoorwaarden('Ja', this)">Ja</button>
             <button class="btn-toggle" onclick="setVoorwaarden('Nee', this)">Nee</button>
           </div>
           <input type="hidden" id="voorwaarden" value="">
-          <div class="conditional" id="voorwaarden-block">
-            <div class="grid-2" style="margin-top:16px;">
-              <div class="field">
-                <label>Fee percentage</label>
-                <div class="text-input-wrap" style="display:flex;align-items:center;border:1.5px solid rgba(0,0,0,0.15);border-radius:8px;overflow:hidden;">
-                  <input type="text" id="fee-pct" placeholder="bijv. 20" inputmode="decimal" oninput="markFilled(this)" style="border:none;padding:10px 12px;font-size:15px;background:transparent;width:100%;outline:none;font-family:inherit;">
-                  <span style="padding:0 12px;color:#73726c;font-size:14px;">%</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Exclusiviteit</label>
-                <div class="btn-toggle-group">
-                  <button class="btn-toggle" onclick="setExclusief('Exclusief', this)">Exclusief</button>
-                  <button class="btn-toggle" onclick="setExclusief('Niet exclusief', this)">Niet exclusief</button>
-                </div>
-                <input type="hidden" id="exclusief" value="">
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="field full">
@@ -303,45 +382,6 @@
 
   <script>
     emailjs.init(EMAILJS_PUBLIC_KEY);
-
-    // ── Time drum picker ──
-    function buildDrum(colId, items, defaultIndex) {
-      const col = document.getElementById(colId);
-      items.forEach((val, i) => {
-        const div = document.createElement('div');
-        div.className = 'drum-item' + (i === defaultIndex ? ' selected' : '');
-        div.textContent = val;
-        col.appendChild(div);
-      });
-      // Scroll naar default
-      col.scrollTop = defaultIndex * 40;
-      col.addEventListener('scroll', () => {
-        const idx = Math.round(col.scrollTop / 40);
-        col.querySelectorAll('.drum-item').forEach((d, i) => d.classList.toggle('selected', i === idx));
-        updateTijd();
-      });
-    }
-
-    function getDrumValue(colId) {
-      const col = document.getElementById(colId);
-      const idx = Math.round(col.scrollTop / 40);
-      return col.querySelectorAll('.drum-item')[idx]?.textContent || '00';
-    }
-
-    function updateTijd() {
-      const h = getDrumValue('drum-hour');
-      const m = getDrumValue('drum-min');
-      const val = h + ':' + m;
-      document.getElementById('tijd').value = val;
-      document.getElementById('tijd-wrap').classList.add('filled-border');
-      document.getElementById('tijd-label').textContent = val;
-    }
-
-    const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
-    const mins  = Array.from({length: 12}, (_, i) => String(i * 5).padStart(2, '0'));
-    buildDrum('drum-hour', hours, 8); // default 08
-    buildDrum('drum-min', mins, 0);   // default :00
-    updateTijd();
 
     // ── State ──
     let senioriteit = '', typeAfspraak = '', auto = '';
@@ -385,35 +425,22 @@
     function setBureaus(val, btn) {
       bureaus = val;
       document.getElementById('bureaus').value = val;
-      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active','active-green','active-red','active-orange'));
-      if (val === 'Nee') btn.classList.add('active-green');
-      else if (val === 'Ja') btn.classList.add('active-red');
-      else btn.classList.add('active-orange');
+      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     }
 
     function setKandidaten(val, btn) {
       kandidaten = val;
       document.getElementById('kandidaten').value = val;
-      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active','active-green','active-red','active-orange'));
-      if (val === 'Nee') btn.classList.add('active-green');
-      else if (val === 'Ja') btn.classList.add('active-red');
-      else btn.classList.add('active-orange');
+      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     }
 
     function setVoorwaarden(val, btn) {
       voorwaarden = val;
       document.getElementById('voorwaarden').value = val;
-      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active','active-green','active-red','active-orange'));
+      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
       btn.classList.add(val === 'Ja' ? 'active-green' : 'active-red');
-      document.getElementById('voorwaarden-block').classList.toggle('visible', val === 'Ja');
-    }
-
-    let exclusief = '';
-    function setExclusief(val, btn) {
-      exclusief = val;
-      document.getElementById('exclusief').value = val;
-      btn.closest('.btn-toggle-group').querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active','active-green','active-red'));
-      btn.classList.add('active');
     }
 
     // ── Formulier verzenden ──
@@ -439,8 +466,6 @@
         kandidaten:    document.getElementById('kandidaten').value,
         salaris:       document.getElementById('salaris').value.trim(),
         voorwaarden:   document.getElementById('voorwaarden').value,
-        fee_pct:       document.getElementById('fee-pct')?.value.trim() || '—',
-        exclusief:     document.getElementById('exclusief').value || '—',
         opmerkingen:   document.getElementById('opmerkingen').value.trim() || '—',
       };
 

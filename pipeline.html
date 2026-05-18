@@ -8,301 +8,26 @@
 <meta name="theme-color" content="#0a0a0f">
 <title>BURG Pipeline</title>
 <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<link rel="stylesheet" href="./styles-dark.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --blue: #0f3460;
-    --blue-mid: #1a4f8c;
-    --blue-light: #2d7dd2;
-    --go: #1db954;
-    --nogo: #e63946;
-    --amber: #f4a261;
-    --purple: #9b5de5;
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c27;
-    --border: rgba(255,255,255,0.08);
-    --text: #f0f0f5;
-    --text-muted: #8888a0;
-  }
-
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
   }
 
-  .header {
-    width: 100%;
-    max-width: 700px;
+  .header--narrow {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 20px 10px;
   }
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--text); letter-spacing: -0.5px; }
-  .logo span { color: var(--blue-light); }
-
-  .stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); }
-  .stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-  .stat strong { font-size: 16px; color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700; }
-
-  .filters {
-    width: 100%;
-    max-width: 700px;
-    padding: 0 20px 14px;
-    display: flex;
-    gap: 8px;
-  }
-  .filter-btn {
-    padding: 6px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .filter-btn.active { background: var(--blue-light); border-color: var(--blue-light); color: white; }
-  .filter-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
-
-  .list {
-    width: 100%;
-    max-width: 700px;
-    padding: 0 20px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .vacancy-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    transition: border-color 0.15s;
-  }
-  .vacancy-card:hover { border-color: rgba(255,255,255,0.14); }
-
-  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-  .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; line-height: 1.2; }
-  .card-company { font-size: 16px; color: var(--blue-light); font-weight: 600; margin-top: 4px; }
-
-  .status-badge {
-    flex-shrink: 0;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-  }
-  .status-approved { background: rgba(29,185,84,0.15); color: var(--go); }
-  .status-in_behandeling { background: rgba(45,125,210,0.15); color: var(--blue-light); }
-
-  .card-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
-  .meta-chip {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 12px; color: var(--text-muted);
-  }
-  .meta-chip a { color: var(--blue-light); text-decoration: none; }
-  .meta-chip a:hover { text-decoration: underline; }
-
-  .recruiter-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-  }
-  .recruiter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
-  .recruiter-assigned { font-size: 13px; color: var(--purple); font-weight: 500; }
-
-  .actions-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  .recruiter-select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 7px 10px;
-    cursor: pointer;
-    outline: none;
-    flex: 1;
-    min-width: 140px;
-    max-width: 200px;
-  }
-  .recruiter-select:focus { border-color: var(--blue-light); }
-  .recruiter-select option { background: #1c1c27; }
-
-  .action-btn {
-    padding: 7px 16px;
-    border-radius: 8px;
-    border: 1px solid;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    white-space: nowrap;
-  }
-  .action-btn:active { transform: scale(0.97); }
-  .action-btn:hover { opacity: 0.85; }
-  .action-btn:disabled { opacity: 0.4; cursor: default; }
-
-  .btn-assign { background: rgba(155,93,229,0.15); border-color: rgba(155,93,229,0.4); color: var(--purple); }
-  .btn-behandeling { background: rgba(45,125,210,0.15); border-color: rgba(45,125,210,0.4); color: var(--blue-light); }
-  .btn-done { background: rgba(29,185,84,0.15); border-color: rgba(29,185,84,0.4); color: var(--go); }
-
-  .loading-state, .empty-state {
-    width: 100%;
-    max-width: 700px;
-    padding: 80px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    color: var(--text-muted);
-    font-size: 14px;
-    text-align: center;
-  }
-  .empty-state span { font-size: 40px; margin-bottom: 4px; }
-
-  .spinner { width: 32px; height: 32px; border: 3px solid var(--surface2); border-top-color: var(--blue-light); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .toast {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 13px;
-    color: var(--text);
-    z-index: 999;
-    transition: transform 0.3s ease;
-    white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .back-link { position: fixed; top: 18px; left: 16px; font-size: 12px; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 4px; z-index: 200; }
-  .back-link:hover { color: var(--text); }
-
-  .enrich-section { margin-bottom: 14px; }
-
-  .badge-no-apollo {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    background: rgba(150,150,150,0.15);
-    border: 1px solid rgba(150,150,150,0.35);
-    color: #999;
-  }
-
-  .badge-not-enriched {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    background: rgba(244,162,97,0.18);
-    border: 1px solid rgba(244,162,97,0.45);
-    color: #f4a261;
-  }
-
-  .badge-enriched {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    background: rgba(29,185,84,0.12);
-    border: 1px solid rgba(29,185,84,0.35);
-    color: var(--go);
-  }
-
-  .enrich-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
-  .enrich-chip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--text-muted);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 4px 10px;
-  }
-  .enrich-chip a { color: var(--blue-light); text-decoration: none; }
-  .enrich-chip a:hover { text-decoration: underline; }
-
-  /* Info badges */
-  .info-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-  .info-badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .info-badge-salary { background: rgba(29,185,84,0.12); color: var(--go); }
-  .info-badge-type { background: rgba(45,125,210,0.12); color: var(--blue-light); }
-  .info-badge-industry { background: rgba(244,162,97,0.12); color: var(--amber); }
-
-  /* LinkedIn mini-badge */
-  .li-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #0077b5; border-radius: 3px; font-size: 9px; font-weight: 800; color: white; text-decoration: none; font-family: 'Syne', sans-serif; vertical-align: middle; margin-left: 5px; flex-shrink: 0; line-height: 1; }
-  .li-badge:hover { opacity: 0.8; }
-
-  /* Contact section */
-  .contact-section { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
-  .contact-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
-  .contact-grid { display: flex; flex-wrap: wrap; gap: 14px; }
-  .contact-block { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 4px; }
-  .contact-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
-  .contact-person-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; }
-  .contact-person-headline { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-  .contact-link { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue-light); text-decoration: none; word-break: break-all; }
-  .contact-link:hover { text-decoration: underline; }
-  .contact-address { font-size: 12px; color: var(--text-muted); }
-  .apollo-tag { font-size: 9px; background: rgba(244,162,97,0.15); color: var(--amber); padding: 1px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
-  .apollo-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.45; font-style: italic; }
 </style>
 </head>
 <body>
 
-<a class="back-link" href="/BURG-Apps/">← Terug</a>
+<a class="back-link back-link--fixed" href="/BURG-Apps/">← Terug</a>
 
-<div class="header">
+<div class="header header--narrow">
   <div class="logo">BURG <span>Pipeline</span></div>
   <div class="stats">
     <div class="stat"><strong id="count-te-wijzen">—</strong>Te wijzen</div>
@@ -511,7 +236,7 @@ function buildCard(job) {
   card.innerHTML = `
     <div class="card-header">
       <div>
-        <div class="card-title">${job.job_title || '—'}</div>
+        <div class="card-title--vacancy">${job.job_title || '—'}</div>
         <div class="card-company">${job.company_name || '—'}${companyLiHtml}</div>
       </div>
       <span class="status-badge status-approved">Goedgekeurd</span>

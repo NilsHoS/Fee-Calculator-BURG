@@ -12,19 +12,13 @@
   <link rel="manifest" href="/BURG-Apps/manifest.json">
   <link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
   <title>BURG — Tools & Apps</title>
+  <link rel="stylesheet" href="./styles.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /* Index-specifieke body layout (overschrijft styles.css body voor deze pagina) */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f4f0;
-      color: #1a1a18;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
       padding: 2rem 1rem;
     }
 
@@ -36,7 +30,6 @@
       margin-bottom: 1.25rem;
       box-shadow: 0 2px 12px rgba(65,105,160,0.18);
     }
-
     .logo img {
       width: 100%;
       height: 100%;
@@ -47,71 +40,16 @@
     h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 0.25rem; text-align: center; }
     .subtitle { font-size: 14px; color: #73726c; margin-bottom: 2.5rem; text-align: center; }
 
-    .tools {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-      max-width: 420px;
-    }
-
-    .tool-card {
-      background: #ffffff;
-      border-radius: 16px;
-      border: 0.5px solid rgba(0,0,0,0.12);
-      padding: 1.25rem;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: transform 0.1s, border-color 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .tool-card:hover { border-color: rgba(65,105,160,0.4); }
-    .tool-card:active { transform: scale(0.98); }
-
-    .tool-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: #f0eeea;
-    }
-    .tool-icon img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-    }
-
-    .tool-text { flex: 1; }
-    .tool-name { font-size: 15px; font-weight: 500; color: #1a1a18; margin-bottom: 2px; }
-    .tool-desc { font-size: 13px; color: #73726c; line-height: 1.4; }
-    .tool-arrow { font-size: 20px; color: #b4b2a9; flex-shrink: 0; }
-
-    .version { font-size: 11px; color: #b4b2a9; margin-top: 2rem; }
-
-    /* Desktop */
-    @media (min-width: 640px) {
-      .tools { max-width: 960px; flex-direction: row; flex-wrap: wrap; }
-      .tool-card { flex-direction: column; align-items: flex-start; padding: 1.5rem; flex: 1; min-width: 160px; }
-      .tool-arrow { display: none; }
-      .tool-icon { width: 72px; height: 72px; margin-bottom: 1rem; border-radius: 16px; }
-      .tool-name { font-size: 16px; margin-bottom: 4px; }
-      .tool-desc { font-size: 13px; }
-    }
+    /* Ontbrekende tool-icon kleurvarianten (niet in styles.css) */
+    .tool-icon.pip { background: #1a3a5c; }
+    .tool-icon.sal { background: #0f2d1a; }
+    .tool-icon.das { background: #0d1a2e; }
+    .tool-icon.ver { background: #5a3e8a; }
+    .tool-icon.pro { background: #7a4a1e; }
 
     @media (prefers-color-scheme: dark) {
-      body { background: #1e1e1c; color: #e0dfd8; }
       h1 { color: #e0dfd8; }
       .subtitle { color: #5f5e5a; }
-      .tool-card { background: #2a2a28; border-color: rgba(255,255,255,0.1); }
-      .tool-card:hover { border-color: rgba(65,105,160,0.5); }
-      .tool-name { color: #e0dfd8; }
-      .tool-desc { color: #5f5e5a; }
-      .tool-icon { background: #333330; }
-      .tool-arrow { color: #444441; }
-      .version { color: #444441; }
     }
   </style>
 </head>
@@ -160,7 +98,7 @@
     </a>
 
     <a href="/BURG-Apps/pipeline.html" class="tool-card">
-      <div class="tool-icon" style="background:#1a3a5c;">
+      <div class="tool-icon pip">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
           <rect x="3" y="5" width="20" height="3" rx="1.5" fill="white"/>
           <rect x="3" y="11.5" width="14" height="3" rx="1.5" fill="white"/>
@@ -177,7 +115,7 @@
     </a>
 
     <a href="/BURG-Apps/sales.html" class="tool-card">
-      <div class="tool-icon" style="background:#0f2d1a;">
+      <div class="tool-icon sal">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="margin:auto;display:block;">
           <rect x="3" y="17" width="4" height="6" rx="1.2" fill="#1db954"/>
           <rect x="9" y="13" width="4" height="10" rx="1.2" fill="#1db954" opacity="0.75"/>
@@ -198,7 +136,7 @@
     </a>
 
     <a href="/BURG-Apps/dashboard.html" class="tool-card">
-      <div class="tool-icon" style="background:#0d1a2e;">
+      <div class="tool-icon das">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="margin:auto;display:block;">
           <rect x="3" y="3" width="9" height="9" rx="2" fill="#2d7dd2" opacity="0.9"/>
           <rect x="14" y="3" width="9" height="5" rx="2" fill="#2d7dd2" opacity="0.5"/>
