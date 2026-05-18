@@ -41,27 +41,11 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 2.5rem 1.5rem;
+      padding: 1.5rem 1rem;
     }
 
-    /* ── Mobiel blokkeren ── */
-    .mobile-block {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 100vh;
-      padding: 2rem;
-      gap: 1rem;
-    }
-    .mobile-block .icon { font-size: 48px; }
-    .mobile-block h2 { font-size: 20px; font-weight: 500; }
-    .mobile-block p { font-size: 14px; color: #73726c; line-height: 1.6; }
-
-    @media (max-width: 768px) {
-      body > .wrap { display: none; }
-      .mobile-block { display: flex; }
+    @media (min-width: 640px) {
+      body { padding: 2.5rem 1.5rem; }
     }
 
     /* ── Layout ── */
@@ -94,8 +78,13 @@
     }
 
     /* ── Grid layouts ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+    @media (min-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
 
     /* ── Form fields ── */
     .field { display: flex; flex-direction: column; gap: 6px; }
@@ -183,7 +172,7 @@
     .conditional .grid-2 { margin-top: 16px; }
 
     /* ── Submit ── */
-    .submit-wrap { display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-top: 8px; }
+    .submit-wrap { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 16px; margin-top: 8px; }
     .submit-note { font-size: 12px; color: #73726c; }
 
     .btn-submit {
@@ -234,20 +223,11 @@
       .status-banner.success { background: #27500a; color: #c0dd97; }
       .status-banner.error   { background: #791f1f; color: #f7c1c1; }
       .status-banner.sending { background: #333330; color: #888780; }
-      .mobile-block h2 { color: #e0dfd8; }
-      .mobile-block p { color: #888780; }
       .divider { border-color: rgba(255,255,255,0.08); }
     }
   </style>
 </head>
 <body>
-
-  <!-- Mobiel blokkeren -->
-  <div class="mobile-block">
-    <div class="icon">🖥️</div>
-    <h2>Alleen beschikbaar op desktop</h2>
-    <p>De Jobpull Overdracht is alleen beschikbaar op een computer. Open deze pagina op je laptop of desktop.</p>
-  </div>
 
   <div class="wrap">
     <a href="/BURG-Apps/" class="back">‹ Terug</a>
