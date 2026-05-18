@@ -2,14 +2,14 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" sizes="32x32" href="/BURG-Apps/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/BURG-Apps/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0f">
 <title>BURG — Mijn Omgeving</title>
-<link rel="apple-touch-icon" href="/BURG-Apps/icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="stylesheet" href="./styles-dark.css">
 <style>
   :root {
@@ -448,7 +448,7 @@ function showToast(msg) {
 // ── Auth ───────────────────────────────────────────────
 const { data: { session } } = await supabase.auth.getSession();
 if (!session) {
-  window.location.replace('/BURG-Apps/login.html');
+  window.location.replace('./login.html');
 } else {
   currentUser = session.user;
   document.getElementById('auth-check').style.display = 'none';
@@ -474,7 +474,7 @@ if (!session) {
 
 window.doLogout = async function() {
   await supabase.auth.signOut();
-  window.location.replace('/BURG-Apps/login.html');
+  window.location.replace('./login.html');
 };
 
 // ── Init ───────────────────────────────────────────────
@@ -584,7 +584,7 @@ window.switchTab = function(tab) {
   if (tab === 'secondcheck') loadSecondCheck();
   if (tab === 'analytics') {
     const frame = document.getElementById('analytics-frame');
-    frame.src = '/BURG-Apps/dashboard.html';
+    frame.src = './dashboard.html';
   }
 };
 
