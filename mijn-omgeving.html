@@ -603,7 +603,12 @@ async function loadSwipe() {
 
   if (error) { stack.innerHTML = `<div style="padding:40px;color:var(--nogo);text-align:center">${esc(error.message)}</div>`; return; }
 
-  swVacatures = (data || []).map(mapSwipeRow);
+  const sourceOrder = { 'linkedin': 0, 'bedrijfswebsite': 1, 'indeed': 2, 'werkzoeken.nl': 3 };
+  swVacatures = (data || []).map(mapSwipeRow).sort((a, b) => {
+    const oa = sourceOrder[a.bron] ?? 99;
+    const ob = sourceOrder[b.bron] ?? 99;
+    return oa - ob;
+  });
   swTotal = swVacatures.length;
   swCurrent = 0; swDecisions = [];
   document.getElementById('badge-swipen').textContent = swTotal;
